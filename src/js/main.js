@@ -26,8 +26,7 @@ var __models = [
    eye:  [0, 10, -22]},
   {name: 'Miku (v2)',
    url:  __modelBaseURL + '/default/miku_v2.pmd',
-   eye:  [0, 10, -22],
-   selected: true},
+   eye:  [0, 10, -22]},
   {name: 'Neru',
    url:  __modelBaseURL + '/default/neru.pmd',
    eye:  [0, 10, -22]},
@@ -49,6 +48,11 @@ var __models = [
   {name: 'Mokou',
    url:  __modelBaseURL + '/mokou/mokou_A.pmd',
    eye:  [0, 10, -22]},
+  {name: 'Alice',
+   url:  __modelBaseURL + '/alice/alice.pmd',
+   eye:  [0, 10, -22],
+   selected: true},
+
 /*
   {name: 'Marisa (Freckled)',
    url:  __modelBaseURL + '/low_marisa/marisa.pmd',
@@ -79,12 +83,20 @@ var __motions = [
    url:  [__motionBaseURL + '/tokino_kakera.vmd',
           __motionBaseURL + '/tokino_kakera_cam.vmd'],
    eye:  [0, 10, -22]},
+  {name: 'Sweet Magic',
+   url:  [
+	   __motionBaseURL + '/sweetmagic-lip.vmd',
+	   __motionBaseURL + '/sweetmagic-left.vmd',
+   ],
+   eye:  [0, 10, -22],
+   selected: true},
+
   {name: 'Wavefile (Short ver.)',
    url:  [__motionBaseURL + '/wavefile_v2.vmd'],
    eye:  [0, 10, -22],
    music: {url: __musicBaseURL + '/wavefile_short.mp3',
            offset: 320},
-   selected: true},
+  },
 /*
   {name: 'Koi Wa Kitto Kyujoushou',
    url:  [__motionBaseURL + '/koiwakitto.vmd',
@@ -527,7 +539,7 @@ var __motionSelectedState = function() {
 };
 
 
-var __init = function() {
+window.onload = function() {
   __loadModelButton = document.getElementById('loadModelButton');
   __loadMotionButton = document.getElementById('loadMotionButton');
   __modelSelect = document.getElementById('modelSelect');
@@ -1136,7 +1148,6 @@ var __mouseMoveHandler = function(e) {
 };
 
 
-window.__init = __init;
 window.__loadModelButtonClicked = __loadModelButtonClicked;
 window.__loadMotionButtonClicked = __loadMotionButtonClicked;
 window.__motionSelectChanged = __motionSelectChanged;
