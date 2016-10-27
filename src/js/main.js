@@ -1,3 +1,5 @@
+/* global PMDView,Layer,PMDFileParser,PMDModelView,VMDFileParser,Whammy */
+'use strict';
 // configurations
 var __modelBaseURL = './model';
 var __motionBaseURL = './vmd';
@@ -296,6 +298,7 @@ var __canvas;
 var __loadModelButton;
 var __loadMotionButton;
 var __videoGenerationCheckbox;
+var __physicsCheckbox;
 var __modelSelect;
 var __motionSelect;
 var __audioSelect;
@@ -530,8 +533,7 @@ var __init = function() {
   __modelSelect = document.getElementById('modelSelect');
   __motionSelect = document.getElementById('motionSelect');
   __audioSelect = document.getElementById('audioSelect');
-  __videoGenerationCheckbox =
-                   document.getElementById('videoGenerationCheckbox');
+  __videoGenerationCheckbox = document.getElementById('videoGenerationCheckbox');
   __physicsCheckbox = document.getElementById('physicsCheckbox');
   __physicsSelect = document.getElementById('physicsSelect');
   __ikSelect = document.getElementById('ikSelect');
@@ -687,7 +689,7 @@ var __imagesLoaded = function(pmd) {
   pmdView.addModelView(pmdModelView);
   __setModelsBasePosition(pmdView.modelViews);
 
-  if(pmdView.getModelNum() == 1) {
+  if(pmdView.getModelNum() === 1) {
     pmdView.setEye(__selectedModel.eye);
     __runStep(pmdView);
   }
@@ -773,9 +775,10 @@ var __startVMDFilesParse = function(buffers) {
 
 
 var __analyzeVMD = function(buffers) {
+  var i;
   var vmds = [];
   var vfps = [];
-  for(var i = 0; i < buffers.length; i++) {
+  for(i = 0; i < buffers.length; i++) {
     vfps[i] = new VMDFileParser(buffers[i]);
 
     if(! vfps[i].valid()) {
@@ -792,7 +795,7 @@ var __analyzeVMD = function(buffers) {
   __vfp = vfps[0]; // for console debug.
   __vmd = vmds[0]; // for console debug.
 
-  for(var i = 1; i < buffers.length; i++) {
+  for(i = 1; i < buffers.length; i++) {
     vmd.merge(vmds[i]);
   }
 
@@ -835,7 +838,7 @@ var __startDance = function() {
     var s = document.getElementById('videoSpan');
     var b = document.createElement('button');
     b.innerText = 'output video';
-    b.onclick = function() {__generateVideo();}
+    b.onclick = function() {__generateVideo();};
     s.appendChild(b);
   }
 
@@ -1062,7 +1065,7 @@ var __runStep = function(pmdView) {
 
 
 var __calculateFps = function() {
-  if((__count % __fps_span) != 0)
+  if((__count % __fps_span) !== 0)
     return;
 
   var newTime = Date.now();
