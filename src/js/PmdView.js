@@ -1,3 +1,4 @@
+'use strict';
 /**
  * TODO: refactoring
  */
@@ -667,3 +668,4 @@ PMDView.prototype._moveLight = function() {
                            light.color);
   this.layer.lightPosition = light.location;
 };
+module.exports = PMDView;
