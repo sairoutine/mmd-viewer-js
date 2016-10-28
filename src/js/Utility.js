@@ -1,3 +1,4 @@
+'use strict';
 /**
  * @param {Integer} type bin->2, oct->8, degit->10, hex->16
  * @param {Integer} num
@@ -19,3 +20,4 @@ function __toString(type, num, figure) {
 
   return prefix + (base + num.toString(type)).substr(-1 * figure);
 };
+module.exports = __toString;
