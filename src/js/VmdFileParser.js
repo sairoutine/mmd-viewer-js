@@ -1,3 +1,4 @@
+'use strict';
 function VMDFileParser(buffer) {
   this.parent = FileParser;
   this.parent.call(this, buffer);
@@ -175,3 +176,5 @@ VMDFileParser.prototype._parseLight = function(v, n) {
   this._parseObject(l, s);
   v.lights[n] = l;
 };
+
+module.exports = VMDFileParser;
