@@ -1,7 +1,9 @@
+/* global __toString */
+'use strict';
 function FileParser(buffer) {
   this.uint8 = new Uint8Array(buffer);
   this.offset = 0;
-};
+}
 FileParser.prototype.Math = Math;
 
 /**
@@ -36,9 +38,7 @@ FileParser.prototype._parseObject = function(obj, s) {
 
 
 FileParser.prototype._getValue = function(param, offset) {
-  return (param.isArray === undefined)
-           ? this._getValueScalar(param, offset)
-           : this._getValueArray(param, offset);
+  return (param.isArray === undefined) ? this._getValueScalar(param, offset) : this._getValueArray(param, offset);
 };
 
 
@@ -67,11 +67,11 @@ FileParser.prototype._getValueScalar = function(param, offset) {
 
 
 FileParser.prototype._getValueArray = function(param, offset) {
-  if(param.type == 'char') {
+  if(param.type === 'char') {
     return this._getChars(offset, param.size);
   }
 
-  if(param.type == 'strings') {
+  if(param.type === 'strings') {
     return this._getStrings(offset, param.size);
   }
 
@@ -87,9 +87,7 @@ FileParser.prototype._getValueArray = function(param, offset) {
 
 
 FileParser.prototype._sizeof = function(param) {
-  return (param.isArray === undefined)
-           ? this._sizeofScalar(param)
-           : this._sizeofArray(param);
+  return (param.isArray === undefined) ? this._sizeofScalar(param) : this._sizeofArray(param);
 };
 
 
@@ -162,18 +160,18 @@ FileParser.prototype._toBinary32 = function(uint32) {
   var exponent = (uint32 >> 23) & 0xFF;
   var fraction = uint32 & 0x7FFFFF;
 
-  if(exponent == 0 && fraction == 0)
+  if(exponent === 0 && fraction === 0)
     return 0.0;
 
-  if(exponent == 255 && fraction == 0)
+  if(exponent === 255 && fraction === 0)
     return Infinity;
 
-  if(exponent == 255 && fraction != 0)
+  if(exponent === 255 && fraction !== 0)
     return NaN;
 
   var tmp = 1;
 
-  if(exponent == 0 && fraction != 0) {
+  if(exponent === 0 && fraction !== 0) {
     exponent = 1;
     tmp = 0;
   }
@@ -194,7 +192,7 @@ FileParser.prototype._getChars = function(pos, size) {
   var str = '';
   for(var i = 0; i < size; i++) {
     var index = pos + i;
-    if(this.uint8[index] == 0)
+    if(this.uint8[index] === 0)
       break;
     // TODO: temporal
     str += String.fromCharCode(this.uint8[index]);
@@ -207,7 +205,7 @@ FileParser.prototype._getStrings = function(pos, size) {
   var str = '';
   for(var i = 0; i < size; i++) {
     var index = pos + i;
-    if(this.uint8[index] == 0)
+    if(this.uint8[index] === 0)
       break;
     // TODO: temporal
     str += __toString(16, this.uint8[index], 2);
@@ -229,7 +227,7 @@ FileParser.prototype.dump = function() {
   var dump = '';
   var charDump = '';
   for(var i = 0; i < array.length; i++) {
-    if(i%16 == 0) {
+    if(i%16 === 0) {
       dump += __toString(16, i, figure);
       dump += ' ';
     }
@@ -242,7 +240,7 @@ FileParser.prototype.dump = function() {
     else
       charDump += '.';
 
-    if(i%16 == 15) {
+    if(i%16 === 15) {
       dump += '  ';
       dump += charDump;
       dump += '\n';
@@ -252,3 +250,5 @@ FileParser.prototype.dump = function() {
 
   return dump;
 };
+
+module.exports = FileParser;
