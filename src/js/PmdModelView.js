@@ -1,3 +1,4 @@
+'use strict';
 /**
  * TODO: refactoring
  */
@@ -953,3 +954,5 @@ PMDModelView.prototype._moveMorph = function(index, weight) {
   }
 
 };
+
+module.exports = PMDModelView;
