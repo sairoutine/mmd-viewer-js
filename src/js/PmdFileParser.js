@@ -1,3 +1,4 @@
+'use strict';
 function PMDFileParser(buffer) {
   this.parent = FileParser;
   this.parent.call(this, buffer);
@@ -566,3 +567,4 @@ PMDFileParser.prototype._parseJoint = function(p, n) {
   this._parseObject(j, s);
   p.joints[n] = j;
 };
+module.exports = PMDFileParser;
