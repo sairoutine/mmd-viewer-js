@@ -1,5 +1,8 @@
-/* global __toString */
 'use strict';
+
+var __toString = require('./Utility');
+
+
 function FileParser(buffer) {
   this.uint8 = new Uint8Array(buffer);
   this.offset = 0;
