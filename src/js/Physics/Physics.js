@@ -1,4 +1,10 @@
+/* global Ammo */
 'use strict';
+
+var PhysicsRigidBody = require('./PhysicsRigidBody');
+var PhysicsConstraint = require('./PhysicsConstraint');
+
+
 function Physics(pmd) {
   this.pmd = pmd;
 
@@ -9,15 +15,15 @@ function Physics(pmd) {
   this.count = 0;
 
   this._init();
-};
+}
 
 
 Physics.prototype._init = function() {
   this.world = this._generateWorld();
 //  this.world.addRigidBody(this._generateGround());
-
+  var i;
   this.bodies.length = 0;
-  for(var i = 0; i < this.pmd.rigidBodyCount; i++) {
+  for(i = 0; i < this.pmd.rigidBodyCount; i++) {
     this.bodies.push(new PhysicsRigidBody(
                            this.pmd,
                            this.world,
@@ -25,7 +31,7 @@ Physics.prototype._init = function() {
   }
 
   this.constraints.length = 0;
-  for(var i = 0; i < this.pmd.jointCount; i++) {
+  for(i = 0; i < this.pmd.jointCount; i++) {
     var joint = this.pmd.joints[i];
     var bodyA = this.bodies[joint.rigidBody1];
     var bodyB = this.bodies[joint.rigidBody2];
