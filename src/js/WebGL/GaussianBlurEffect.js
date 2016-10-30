@@ -1,9 +1,13 @@
+/* jshint multistr: true */
 'use strict';
 
+var PostEffect = require('./PostEffect');
+var __inherit = require('../Inherit').__inherit;
+var __copyParentMethod = require('../Inherit').__copyParentMethod;
 function GaussianBlurEffect(layer) {
   this.parent = PostEffect;
   this.parent.call(this, layer, 2);
-};
+}
 __inherit(GaussianBlurEffect, PostEffect);
 
 GaussianBlurEffect.prototype._FSHADER = {};

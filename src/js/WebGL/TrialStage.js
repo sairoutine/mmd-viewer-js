@@ -1,5 +1,9 @@
+
+/* jshint multistr: true */
 'use strict';
 
+var StageShader = require('./StageShader');
+var __inherit = require('../Inherit').__inherit;
 function TrialStage(layer) {
   this.parent = StageShader;
   this.parent.call(this, layer);

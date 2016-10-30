@@ -1,9 +1,14 @@
+/* jshint multistr: true */
 'use strict';
+
+var PostEffect = require('./PostEffect');
+
+var __inherit = require('../Inherit').__inherit;
 
 function BlurEffect(layer) {
   this.parent = PostEffect;
   this.parent.call(this, layer, 1);
-};
+}
 __inherit(BlurEffect, PostEffect);
 
 

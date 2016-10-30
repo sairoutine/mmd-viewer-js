@@ -1,10 +1,15 @@
+/* jshint multistr: true */
 'use strict';
+
+var PostEffect = require('./PostEffect');
+var __inherit = require('../Inherit').__inherit;
+var __copyParentMethod = require('../Inherit').__copyParentMethod;
 
 /* the idea is from https://github.com/i-saint/Unity5Effects */
 function FaceMosaicEffect(layer) {
   this.parent = PostEffect;
   this.parent.call(this, layer, 1);
-};
+}
 __inherit(FaceMosaicEffect, PostEffect);
 
 

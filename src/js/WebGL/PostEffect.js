@@ -1,3 +1,6 @@
+
+/* global mat4,mat3,alert,vec3,quat4 */
+/* jshint multistr: true */
 'use strict';
 
 function PostEffect(layer, pathNum) {
@@ -170,7 +173,7 @@ PostEffect.prototype._compileShader = function(params) {
 PostEffect.prototype._getGaussianWeight = function(array, length, strength) {
   var t = 0.0;
   var d = strength * strength / 100;
-  for(i = 0; i < length; i++){
+  for(var i = 0; i < length; i++){
     var r = 1.0 + 2.0 * i;
     var w = this.Math.exp(-0.5 * (r * r) / d);
     array[i] = w;

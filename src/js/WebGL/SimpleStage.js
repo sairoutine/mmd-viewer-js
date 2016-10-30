@@ -1,5 +1,8 @@
+
+/* jshint multistr: true */
 'use strict';
 
+var StageShader = require('./StageShader');
 function SimpleStage(layer) {
   this.parent = StageShader;
   this.parent.call(this, layer);

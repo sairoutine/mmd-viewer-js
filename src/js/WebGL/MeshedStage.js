@@ -1,9 +1,14 @@
+
+/* jshint multistr: true */
+
 'use strict';
 
+var StageShader = require('./StageShader');
+var __inherit = require('../Inherit').__inherit;
 function MeshedStage(layer) {
   this.parent = StageShader;
   this.parent.call(this, layer);
-};
+}
 __inherit(MeshedStage, StageShader);
 
 

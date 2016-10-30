@@ -1,4 +1,18 @@
+
+/* global mat4,mat3,alert,vec3 */
+/* jshint multistr: true */
 'use strict';
+
+var BlurEffect = require('./BlurEffect');
+var GaussianBlurEffect = require('./GaussianBlurEffect');
+var DiffusionBlurEffect = require('./DiffusionBlurEffect');
+var DivisionEffect = require('./DivisionEffect');
+var LowResolutionEffect = require('./LowResolutionEffect');
+var FaceMosaicEffect = require('./FaceMosaicEffect');
+var SimpleStage = require('./SimpleStage');
+var MeshedStage = require('./MeshedStage');
+var TrialStage = require('./TrialStage');
+
 function Layer(canvas) {
   this.canvas = canvas;
   this.gl = this._initGl(canvas);
@@ -28,7 +42,7 @@ function Layer(canvas) {
   this._initPostEffects();
   this._initStageShaders();
   this._initShadowFrameBuffer();
-};
+}
 
 // only for reference.
 Layer.prototype.mat4 = mat4;

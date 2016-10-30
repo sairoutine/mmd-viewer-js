@@ -1,3 +1,4 @@
+/* jshint multistr: true */
 'use strict';
 
 function StageShader(layer) {
