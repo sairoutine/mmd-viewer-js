@@ -2,7 +2,7 @@
 function VMDHeader() {
   this.magic = null;
   this.modelName = null;
-};
+}
 
 
 VMDHeader.prototype.valid = function() {

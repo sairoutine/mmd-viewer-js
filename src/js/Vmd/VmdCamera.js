@@ -9,7 +9,7 @@ function VMDCamera(id) {
   this.interpolation = null;
   this.angle = null;
   this.perspective = null;
-};
+}
 
 
 VMDCamera.prototype.supply = function() {

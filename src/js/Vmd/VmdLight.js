@@ -5,7 +5,7 @@ function VMDLight(id) {
   this.frameNum = null;
   this.color = null;
   this.location = null;
-};
+}
 
 
 VMDLight.prototype.supply = function() {

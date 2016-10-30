@@ -5,7 +5,7 @@ function VMDFace(id) {
   this.name = null;
   this.frameNum = null;
   this.weight = null;
-};
+}
 
 
 VMDFace.prototype.supply = function() {

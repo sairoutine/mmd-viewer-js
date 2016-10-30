@@ -1,8 +1,18 @@
 'use strict';
+
+var FileParser = require('../FileParser');
+var __inherit = require('../Inherit').__inherit;
+var VMD = require('./Vmd');
+var VMDHeader = require('./VmdHeader');
+var VMDMotion = require('./VmdMotion');
+var VMDFace = require('./VmdFace');
+var VMDCamera = require('./VmdCamera');
+var VMDLight = require('./VmdLight');
+
 function VMDFileParser(buffer) {
   this.parent = FileParser;
   this.parent.call(this, buffer);
-};
+}
 __inherit(VMDFileParser, FileParser);
 
 VMDFileParser.prototype._HEADER_STRUCTURE = {

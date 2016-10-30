@@ -1,3 +1,5 @@
+
+/* global vec3,vec4,quat4,mat4 */
 'use strict';
 /**
  * instance of classes in this file should be created and

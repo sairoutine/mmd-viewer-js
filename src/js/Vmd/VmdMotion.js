@@ -1,4 +1,4 @@
-'use stirct';
+'use strict';
 
 function VMDMotion(id) {
   this.id = id;
@@ -7,7 +7,7 @@ function VMDMotion(id) {
   this.location = null;
   this.rotation = null;
   this.interpolation = null;
-};
+}
 
 
 VMDMotion.prototype.supply = function() {
