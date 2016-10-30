@@ -236,10 +236,10 @@ var __shadowMappings = [
 
 var __edges = [
   {name: 'Edge OFF',
-   value: PMDView._EDGE_OFF},
-  {name: 'Edge ON',
-   value: PMDView._EDGE_ON,
+   value: PMDView._EDGE_OFF,
    selected: true},
+  {name: 'Edge ON',
+   value: PMDView._EDGE_ON},
 ];
 
 
