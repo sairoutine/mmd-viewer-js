@@ -1,4 +1,7 @@
 'use strict';
+
+
+
 function PhysicsEntity() {
   this.workNum = 10;
   this.workTrs = [];
@@ -9,7 +12,7 @@ function PhysicsEntity() {
     this.workQs[i] = new Ammo.btQuaternion();
     this.workVs[i] = new Ammo.btVector3();
   }
-};
+}
 
 
 PhysicsEntity.prototype.allocTr = function() {

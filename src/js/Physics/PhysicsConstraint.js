@@ -1,4 +1,9 @@
+/* global Ammo */
 'use strict';
+
+var PhysicsEntity = require('./PhysicsEntity');
+var __inherit = require('../Inherit').__inherit;
+
 function PhysicsConstraint(pmd, world, joint, bodyA, bodyB) {
   this.parent = PhysicsEntity;
   this.parent.call(this);
@@ -14,7 +19,7 @@ function PhysicsConstraint(pmd, world, joint, bodyA, bodyB) {
   this.boneOffsetFormInverse = null;
 
   this._init();
-};
+}
 __inherit(PhysicsConstraint, PhysicsEntity);
 
 

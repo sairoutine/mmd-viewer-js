@@ -1,4 +1,9 @@
+/* global Ammo */
 'use strict';
+
+
+var __inherit = require('../Inherit').__inherit;
+var PhysicsEntity = require('./PhysicsEntity');
 function PhysicsRigidBody(pmd, world, body) {
   this.parent = PhysicsEntity;
   this.parent.call(this);
