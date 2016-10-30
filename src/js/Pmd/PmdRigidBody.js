@@ -18,7 +18,7 @@ function PMDRigidBody(id) {
   this.recoil = null;
   this.friction = null;
   this.type = null;
-};
+}
 
 
 PMDRigidBody.prototype.dump = function() {

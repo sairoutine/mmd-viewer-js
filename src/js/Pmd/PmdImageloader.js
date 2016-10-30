@@ -1,4 +1,4 @@
-'use stirct';
+'use strict';
 
 function PMDImageLoader(pmd, baseURL) {
   this.pmd = pmd;
@@ -7,7 +7,7 @@ function PMDImageLoader(pmd, baseURL) {
   this.errorImageNum = 0;
   this.loadedImageNum = 0;
   this.noImageNum = 0;
-};
+}
 
 
 /**

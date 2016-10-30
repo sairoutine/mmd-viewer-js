@@ -1,3 +1,4 @@
+'use strict';
 function PMDVertex(id) {
   this.id = id;
   this.position = null;
@@ -8,7 +9,7 @@ function PMDVertex(id) {
   this.edgeFlag = null;
   this.boneWeightFloat1 = null;
   this.boneWeightFloat2 = null;
-};
+}
 
 
 PMDVertex.prototype.setup = function() {

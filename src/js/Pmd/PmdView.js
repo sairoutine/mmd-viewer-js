@@ -1,3 +1,5 @@
+
+/* global vec3,vec4,quat4,mat4 */
 'use strict';
 /**
  * TODO: refactoring
@@ -59,7 +61,7 @@ function PMDView(layer) {
   this.setAudioType(this._AUDIO_ON);
   this.setPhysicsType(this._PHYSICS_ON);
   this.setLightColor(1.0);
-};
+}
 
 // Note: for reference
 PMDView.prototype.Math = Math;

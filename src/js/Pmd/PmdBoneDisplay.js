@@ -4,7 +4,7 @@ function PMDBoneDisplay(id) {
   this.id = id;
   this.index = null;
   this.frameIndex = null;
-};
+}
 
 
 PMDBoneDisplay.prototype.dump = function() {

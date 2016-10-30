@@ -1,9 +1,32 @@
 'use strict';
+var FileParser = require('../FileParser');
+var __inherit = require('../Inherit').__inherit;
+var PMD = require('./Pmd');
+var PMDHeader = require('./PmdHeader');
+var PMDVertex = require('./PmdVertex');
+var PMDVertexIndex = require('./PmdVertexIndex');
+var PMDMaterial = require('./PmdMaterial');
+var PMDBone = require('./PmdBone');
+var PMDIK = require('./PmdIk');
+var PMDFace = require('./PmdFace');
+var PMDFaceVertex = require('./PMDFaceVertex');
+var PMDFaceDisplay = require('./PMDFaceDisplay');
+var PMDBoneFrameName = require('./PMDBoneFrameName');
+var PMDBoneDisplay = require('./PMDBoneDisplay');
+var PMDEnglishHeader = require('./PMDEnglishHeader');
+var PMDEnglishBoneName = require('./PMDEnglishBoneName');
+var PMDEnglishBoneFrameName = require('./PMDEnglishBoneFrameName');
+var PMDEnglishFaceName = require('./PMDEnglishFaceName');
+var PMDToonTexture = require('./PMDToonTexture');
+var PMDRigidBody = require('./PMDRigidBody');
+var PMDJoint = require('./PMDJoint');
+
+
 function PMDFileParser(buffer) {
   this.parent = FileParser;
   this.parent.call(this, buffer);
   this.englishCompatibility = false;
-};
+}
 __inherit(PMDFileParser, FileParser);
 
 PMDFileParser.prototype._HEADER_STRUCTURE = {

@@ -2,7 +2,7 @@
 function PMDVertexIndex(id) {
   this.id = id;
   this.index = null;
-};
+}
 
 
 PMDVertexIndex.prototype.dump = function() {

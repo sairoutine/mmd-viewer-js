@@ -3,7 +3,7 @@
 function PMDBoneFrameName(id) {
   this.id = id;
   this.name = null;
-};
+}
 
 
 PMDBoneFrameName.prototype.dump = function() {

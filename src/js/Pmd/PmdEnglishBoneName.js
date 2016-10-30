@@ -3,7 +3,7 @@
 function PMDEnglishBoneName(id) {
   this.id = id;
   this.name = null;
-};
+}
 
 
 PMDEnglishBoneName.prototype.dump = function() {

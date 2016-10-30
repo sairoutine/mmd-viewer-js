@@ -8,7 +8,7 @@ function PMDIK(id) {
   this.iteration = null;
   this.limitation = null;
   this.childBoneIndices = null;
-};
+}
 
 
 PMDIK.prototype.dump = function() {

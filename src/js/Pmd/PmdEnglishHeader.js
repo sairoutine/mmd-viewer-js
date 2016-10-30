@@ -4,7 +4,7 @@ function PMDEnglishHeader() {
   this.compatibility = null;
   this.modelName = null;
   this.comment = null;
-};
+}
 
 
 PMDEnglishHeader.prototype.dump = function() {

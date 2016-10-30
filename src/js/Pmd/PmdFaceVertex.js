@@ -6,7 +6,7 @@ function PMDFaceVertex(id, type) {
   this.type = type;
   this.index = null;
   this.position = null;
-};
+}
 
 
 PMDFaceVertex.prototype.dump = function() {

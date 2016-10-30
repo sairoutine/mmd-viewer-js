@@ -1,4 +1,6 @@
 'use strict';
+
+var PMDImageLoader = require('./PmdImageloader');
 /**
  * instance of classes in this file should be created and
  * their fields should be set by PMDFileParser.

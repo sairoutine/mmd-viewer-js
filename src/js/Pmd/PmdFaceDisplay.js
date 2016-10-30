@@ -3,7 +3,7 @@
 function PMDFaceDisplay(id) {
   this.id = id;
   this.index = null;
-};
+}
 
 
 PMDFaceDisplay.prototype.dump = function() {

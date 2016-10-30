@@ -4,7 +4,7 @@
 function PMDEnglishBoneFrameName(id) {
   this.id = id;
   this.name = null;
-};
+}
 
 
 PMDEnglishBoneFrameName.prototype.dump = function() {

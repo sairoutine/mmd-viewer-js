@@ -10,7 +10,7 @@ function PMDMaterial(id) {
   this.edgeFlag = null;
   this.vertexCount = null;
   this.fileName = null;
-};
+}
 
 
 /**

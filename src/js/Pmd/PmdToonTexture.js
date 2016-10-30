@@ -3,7 +3,7 @@
 function PMDToonTexture(id) {
   this.id = id;
   this.fileName = null;
-};
+}
 
 
 PMDToonTexture.prototype.dump = function() {

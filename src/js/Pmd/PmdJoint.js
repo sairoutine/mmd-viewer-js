@@ -13,7 +13,7 @@ function PMDJoint(id) {
   this.rotationLimitation2 = null;
   this.springPosition = null;
   this.springRotation = null;
-};
+}
 
 
 PMDJoint.prototype.dump = function() {

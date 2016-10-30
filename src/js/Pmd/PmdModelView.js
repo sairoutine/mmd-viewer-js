@@ -1,4 +1,7 @@
+
+/* global vec3,vec4,quat4,mat4 */
 'use strict';
+var Physics = require('../Physics/Physics');
 /**
  * TODO: refactoring
  */

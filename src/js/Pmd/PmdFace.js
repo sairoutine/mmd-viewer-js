@@ -11,7 +11,7 @@ function PMDFace(id) {
                            // TODO: remove and use id in VMD
                            //       instead of motionIndex
                            //       not to have VMD related info here
-};
+}
 
 
 PMDFace.prototype.dump = function() {
