@@ -1,5 +1,14 @@
-/* global PMDView,Layer,PMDFileParser,PMDModelView,VMDFileParser,Whammy */
+/* global Whammy */
 'use strict';
+
+// require
+var PMDView = require('./Pmd/PMDView');
+var Layer = require('./WebGL/Layer');
+var PMDFileParser = require('./Pmd/PMDFileParser');
+var PMDModelView = require('./Pmd/PMDModelView');
+var VMDFileParser = require('./Vmd/VMDFileParser');
+
+
 // configurations
 var __modelBaseURL = './model';
 var __motionBaseURL = './vmd';

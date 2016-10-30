@@ -1,12 +1,13 @@
-
 /* jshint multistr: true */
 'use strict';
+
+var __inherit = require('../Inherit').__inherit;
 
 var StageShader = require('./StageShader');
 function SimpleStage(layer) {
   this.parent = StageShader;
   this.parent.call(this, layer);
-};
+}
 __inherit(SimpleStage, StageShader);
 
 SimpleStage.prototype._FSHADER = {};
@@ -59,4 +60,4 @@ SimpleStage.prototype._FSHADER.src = '\
   }\
 ';
 
-module.exports = SimpleStage
+module.exports = SimpleStage;
