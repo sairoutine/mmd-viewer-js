@@ -577,14 +577,15 @@ window.onload = function() {
   __canvas.onmousemove = __mouseMoveHandler;
   __canvas.oncontextmenu = __contextMenuHandler;
   __canvas.addEventListener('mousewheel', __wheelHandler, false);
-
+  // 1.Layer を作成(WF)
   __layer = new Layer(__canvas);
-
+  // 2.Layer インスタンスからPMDView インスタンスを作成(WF)
   var pmdView = new PMDView(__layer);
   __pmdView = pmdView;  // for console debug
 
   __updateLightColorSpan();
 
+  // DOM の各要素を config 通りに初期化
   __initSelect(__modelSelect, __models);
   __initSelect(__motionSelect, __motions);
   __initSelect(__audioSelect, __audios);
@@ -600,6 +601,7 @@ window.onload = function() {
   __initSelect(__skinningSelect, __skinnings);
   __initSelect(__lightingSelect, __lightings);
 
+  // 3. PMDView インスタンスに各設定を保存する(WF)
   __setPhysicsType(pmdView);
   __setIKType(pmdView);
   __setMorphType(pmdView);
@@ -628,8 +630,9 @@ var __initSelect = function(s, options) {
   }
 };
 
-
+// 4. モデルロードボタンが押下された時(WF)
 var __loadModelButtonClicked = function() {
+  // DOM の able/disable 設定
   __loadingFileState();
 
   var index = parseInt(__modelSelect.value);
@@ -640,6 +643,7 @@ var __loadModelButtonClicked = function() {
   var request = new XMLHttpRequest();
   request.responseType = 'arraybuffer';
   request.onload = function() {
+	// 5. PMD ファイルの parse(WF)
     __startPMDFileParse(request.response);
   };
   request.onerror = function(error) {
@@ -656,6 +660,7 @@ var __loadModelButtonClicked = function() {
 };
 
 
+// 6. PMD ファイルの parse(WF)
 var __startPMDFileParse = function(buffer) {
   __putStatus('parsing PMD file...');
   // Note: async call to update status area now.
@@ -663,6 +668,7 @@ var __startPMDFileParse = function(buffer) {
 };
 
 
+// 7. PMD ファイルの parse(WF)
 var __analyzePMD = function(buffer) {
   var pfp = new PMDFileParser(buffer);
   __pfp = pfp; // for console debug.
@@ -678,6 +684,7 @@ var __analyzePMD = function(buffer) {
 
   pmd.setup();
 
+  // 8. PMD ファイルから画像のロード(WF)
   __loadImages(pmd);
 };
 
@@ -685,11 +692,13 @@ var __analyzePMD = function(buffer) {
 var __loadImages = function(pmd) {
   var url = __selectedModel.url;
   var imageBaseURL = url.substring(0, url.lastIndexOf('/'));
+  // 9. PMD ファイルから画像のロード(WF)
   pmd.loadImages(imageBaseURL, __imagesLoaded);
   __putStatus('loading images...');
 };
 
 
+// 10. PMD ファイルから画像のロード完了(WF)
 var __imagesLoaded = function(pmd) {
   var pmdView = __pmdView;
 
@@ -704,14 +713,18 @@ var __imagesLoaded = function(pmd) {
   __pmdFileLoadedState();
   __pmdFileLoaded = true;
 
+  // 11. PMDModelView インスタンスの作成(WF)
   var pmdModelView = new PMDModelView(__layer, pmd, pmdView);
   pmdModelView.setup();
 
+  // 12. PMDModelView を pmdView に追加(WF)
   pmdView.addModelView(pmdModelView);
+  // 13. PMDModelView の数に応じて各モデルの立ち位置を設定(WF)
   __setModelsBasePosition(pmdView.modelViews);
 
   if(pmdView.getModelNum() === 1) {
     pmdView.setEye(__selectedModel.eye);
+    // 14. update && display each requestAnimationFrame(WF)
     __runStep(pmdView);
   }
 };
@@ -750,6 +763,7 @@ var __setModelsBasePosition = function(pmdModelViews) {
 };
 
 
+// 15. motion のロードを押下(WF)
 var __loadMotionButtonClicked = function() {
   __loadingFileState();
 
@@ -770,8 +784,10 @@ var __loadVMDFiles = function(urls, index, buffers) {
   request.onload = function() {
     buffers.push(request.response);
     if(index+1 >= urls.length)
+	  // 最後のURLを読み込み終わった
       __startVMDFilesParse(buffers);
     else
+      // 再帰的に自分を呼び出し
       __loadVMDFiles(urls, index+1, buffers);
   };
   request.onerror = function(error) {
@@ -817,10 +833,12 @@ var __analyzeVMD = function(buffers) {
   __vmd = vmds[0]; // for console debug.
 
   for(i = 1; i < buffers.length; i++) {
+	// 複数モーションある場合は一番最初のモーションにマージしていく
     vmd.merge(vmds[i]);
   }
 
   // TODO: has accessed __pmdView
+  // 16. PMDView インスタンスに VMD インスタンスをセット(WF)
   __pmdView.setVMD(vmd);
   __pmdView.setEye(__selectedMotion.eye);
 
@@ -851,6 +869,7 @@ var __startDance = function() {
   __putStatus('ready.');
   __putStatus('starts dance.');
 
+  // 17. dance を開始(WF)
   __pmdView.startDance();
 
   if(__videoGenerationCheckbox.checked) {
