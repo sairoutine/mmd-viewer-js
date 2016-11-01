@@ -6,7 +6,7 @@
  */
 function PMDView(layer) {
   this.layer = layer;
-  this.modelViews = [];
+  this.modelViews = []; // PmdModelView インスタンス一覧
 
   this.vmd = null;
   this.audio = null;

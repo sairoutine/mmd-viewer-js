@@ -632,7 +632,7 @@ Layer.prototype.pourVTF = function(texture, array, width) {
   gl.uniform1i(this.shader.uVTFWidthUniform, width);
 };
 
-
+// オフスクリーンレンダリング用の FrameBuffer
 Layer.prototype._createFrameBuffer = function(shader, gl, width, height) {
   var frameBuffer = gl.createFramebuffer();
   gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuffer);

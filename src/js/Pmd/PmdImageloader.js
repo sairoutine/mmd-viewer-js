@@ -23,7 +23,8 @@ PMDImageLoader.prototype.load = function(callback) {
   this.noImageNum = 0;
 
   for(var i = 0; i < this.pmd.materialCount; i++) {
-    var fileName = this.pmd.materials[i].convertedFileName();
+    // PmdMaterial->convertedFileName
+    var fileName = this.pmd.materials[i].convertedFileName(); // tga -> png にファイル名変更
     if(fileName == '' ||
        fileName.indexOf('.spa') >= 0 ||
        fileName.indexOf('.sph') >= 0) {
