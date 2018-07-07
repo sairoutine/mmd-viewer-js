@@ -1,4 +1,4 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 'use strict';
 
 var __toString = require('./Utility');
@@ -1522,511 +1522,6 @@ module.exports = PhysicsRigidBody;
 },{"../Inherit":2,"./PhysicsEntity":5}],7:[function(require,module,exports){
 'use strict';
 
-var PMDImageLoader = require('./PmdImageloader');
-/**
- * instance of classes in this file should be created and
- * their fields should be set by PMDFileParser.
- * TODO: rename fields to appropriate ones.
- */
-function PMD() {
-  this.header = null;
-  this.englishHeader = null;
-  this.vertexCount = null;
-  this.vertexIndexCount = null;
-  this.materialCount = null;
-  this.boneCount = null;
-  this.ikCount = null;
-  this.faceCount = null;
-  this.faceDisplayCount = null;
-  this.boneFrameNameCount = null;
-  this.boneDisplayCount = null;
-  this.toonTextureCount = null;
-  this.rigidBodyCount = null;
-  this.jointCount = null;
-
-  this.vertices = [];
-  this.vertexIndices = []
-  this.materials = [];
-  this.bones = [];
-  this.iks = [];
-  this.faces = [];
-  this.faceDisplays = [];
-  this.boneFrameNames = [];
-  this.boneDisplays = [];
-  this.englishBoneNames = [];
-  this.englishFaceNames = [];
-  this.englishBoneFrameNames = [];
-  this.toonTextures = [];
-  this.rigidBodies = [];
-  this.joints = [];
-
-  this.bonesHash = {};
-  this.facesHash = {};
-
-  this.images = [];
-  this.toonImages = [];
-  this.sphereImages = [];
-
-  this.centerBone = {};
-  this.leftFootBone = {};
-  this.rightFootBone = {};
-  this.leftEyeBone = {};
-  this.rightEyeBone = {};
-};
-
-
-PMD.prototype.valid = function() {
-  return this.header.valid();
-};
-
-
-PMD.prototype.getParentBone = function(bone) {
-  return this.bones[bone.parentIndex];
-};
-
-
-PMD.prototype.loadImages = function(baseURL, callback) {
-  var loader = new PMDImageLoader(this, baseURL);
-  loader.load(callback);
-};
-
-
-PMD.prototype.setup = function() {
-  for(var i = 0; i < this.vertexCount; i++) {
-    this.vertices[i].setup();
-  }
-
-  for(var i = 0; i < this.boneCount; i++) {
-    this.bonesHash[this.bones[i].name] = this.bones[i];
-  }
-
-  for(var i = 0; i < this.faceCount; i++) {
-    this.facesHash[this.faces[i].name] = this.faces[i];
-  }
-//  this.toRight();
-
-  this._keepSomeBonesInfo();
-};
-
-
-PMD.prototype.toRight = function() {
-  for(var i = 0; i < this.vertexCount; i++) {
-    this.vertices[i].toRight();
-  }
-
-  for(var i = 0; i < this.boneCount; i++) {
-    this.bones[i].toRight();
-  }
-
-  for(var i = 0; i < this.faceCount; i++) {
-    this.faces[i].toRight();
-  }
-
-  for(var i = 0; i < this.rigidBodyCount; i++) {
-    this.rigidBodies[i].toRight();
-  }
-
-  for(var i = 0; i < this.jointCount; i++) {
-    this.joints[i].toRight();
-  }
-};
-
-
-/**
- * TODO: change strings if sjis-lib is used
- */
-PMD.prototype._keepSomeBonesInfo = function() {
-  // �Z���^�[, ������, �E����, ����, �E��
-  this._keepBoneInfo(this.centerBone,    '0x830x5a0x830x930x830x5e0x810x5b');
-  this._keepBoneInfo(this.leftFootBone,  '0x8d0xb60x910xab0x8e0xf1');
-  this._keepBoneInfo(this.rightFootBone, '0x890x450x910xab0x8e0xf1');
-  this._keepBoneInfo(this.leftEyeBone,   '0x8d0xb60x960xda');
-  this._keepBoneInfo(this.rightEyeBone,  '0x890x450x960xda');
-};
-
-
-PMD.prototype._keepBoneInfo = function(obj, name) {
-  var boneNum = this._findBoneNumberByName(name);
-  if(boneNum !== null) {
-    var bone = this.bones[boneNum];
-    obj.pos = this._getAveragePositionOfBone(bone);
-    obj.id = boneNum;
-    obj.bone = bone;
-    obj.posFromBone = [];
-    obj.posFromBone[0] = obj.pos[0] - bone.position[0];
-    obj.posFromBone[1] = obj.pos[1] - bone.position[1];
-    obj.posFromBone[2] = obj.pos[2] - bone.position[2];
-  } else {
-    obj.pos = null;
-    obj.id = null;
-    obj.bone = null;
-    obj.posFromBone = null;
-  }
-};
-
-
-PMD.prototype._findBoneNumberByName = function(name) {
-  for(var i = 0; i < this.boneCount; i++) {
-    if(this.bones[i].name == name)
-      return i;
-  }
-  return null;
-};
-
-
-/**
- * TODO: consider the algorithm again.
- */
-PMD.prototype._getAveragePositionOfBone = function(bone) {
-  var num = 0;
-  var pos = [0, 0, 0];
-  for(var i = 0; i < this.vertexCount; i++) {
-    var v = this.vertices[i];
-    // TODO: consider boneWeight?
-    if(v.boneIndices[0] == bone.id || v.boneIndices[1] == bone.id) {
-      pos[0] += v.position[0];
-      pos[1] += v.position[1];
-      pos[2] += v.position[2];
-      num++;
-    }
-/*
-    if(v.boneIndices[0] == bone.id) {
-      pos[0] += v.position[0] * (v.boneIndex / 100);
-      pos[1] += v.position[1] * (v.boneIndex / 100);
-      pos[2] += v.position[2] * (v.boneIndex / 100);
-      num++;
-    } else if(v.boneIndices[1] == bone.id) {
-      pos[0] += v.position[0] * ((100 - v.boneIndex) / 100);
-      pos[1] += v.position[1] * ((100 - v.boneIndex) / 100);
-      pos[2] += v.position[2] * ((100 - v.boneIndex) / 100);
-      num++;
-    }
-*/
-  }
-  if(num != 0) {
-    pos[0] = pos[0] / num;
-    pos[1] = pos[1] / num;
-    pos[2] = pos[2] / num;
-  }
-  return pos;
-};
-
-
-PMD.prototype.getBoneNames = function() {
-  var array = [];
-  for(var i = 0; i < this.boneCount; i++) {
-    array[i] = this.bones[i].name;
-  }
-  return array;
-};
-
-
-PMD.prototype.getFaceNames = function() {
-  var array = [];
-  for(var i = 0; i < this.faceCount; i++) {
-    array[i] = this.faces[i].name;
-  }
-  return array;
-};
-
-
-PMD.prototype.dump = function() {
-  var str = '';
-
-  str += 'vertexCount: '        + this.vertexCount        + '\n';
-  str += 'vertexIndexCount: '   + this.vertexIndexCount   + '\n';
-  str += 'materialCount: '      + this.materialCount      + '\n';
-  str += 'boneCount: '          + this.boneCount          + '\n';
-  str += 'ikCount: '            + this.ikCount            + '\n';
-  str += 'faceCount: '          + this.faceCount          + '\n';
-  str += 'faceDisplayCount: '   + this.faceDisplayCount   + '\n';
-  str += 'boneFrameNameCount: ' + this.boneFrameNameCount + '\n';
-  str += 'boneDisplayCount: '   + this.boneDisplayCount   + '\n';
-  str += 'toonTextureCount: '   + this.toonTextureCount   + '\n';
-  str += 'rigidBodyCount: '     + this.rigidBodyCount     + '\n';
-  str += 'jointCount: '         + this.jointCount         + '\n';
-  str += '\n';
-
-  str += this._dumpHeader();
-  str += this._dumpVertices();
-  str += this._dumpVertexIndices();
-  str += this._dumpMaterials();
-  str += this._dumpBones();
-  str += this._dumpIKs();
-  str += this._dumpFaces();
-  str += this._dumpfaceDisplays();
-  str += this._dumpBoneFrameNames();
-  str += this._dumpBoneDisplays();
-  str += this._dumpEnglishHeader();
-  str += this._dumpEnglishBoneNames();
-  str += this._dumpEnglishFaceNames();
-  str += this._dumpToonTextures();
-  str += this._dumpRigidBodies();
-  str += this._dumpJoints();
-
-  return str;
-};
-
-
-PMD.prototype.boneNumsOfMaterials = function() {
-  var offset = 0;
-  var result = [];
-  for(var i = 0; i < this.materialCount; i++) {
-    var array = [];
-    for(var j = 0; j < this.boneCount; j++) {
-      array[j] = 0;
-    }
-
-    var count = 0;
-    var num = this.materials[i].vertexCount;
-    for(var j = 0; j < num; j++) {
-      var v = this.vertices[this.vertexIndices[offset + j].index];
-      for(var k = 0; k < v.boneIndices.length; k++) {
-        var index = v.boneIndices[k];
-        if(array[index] == 0)
-          count++;
-        array[index]++;
-      }
-    }
-    result.push(count);
-    offset += num;
-  }
-  return result;
-};
-
-
-PMD.prototype._dumpHeader = function() {
-  var str = '';
-  str += '-- Header --\n';
-  str += this.header.dump();
-  str += '\n';
-  return str;
-};
-
-
-PMD.prototype._dumpEnglishHeader = function() {
-  var str = '';
-  str += '-- Header(English) --\n';
-  str += this.englishHeader.dump();
-  str += '\n';
-  return str;
-};
-
-
-PMD.prototype._dumpVertices = function() {
-  var str = '';
-  str += '-- Vertices --\n';
-  for(var i = 0; i < this.vertexCount; i++) {
-    str += this.vertices[i].dump();
-  }
-  str += '\n';
-  return str;
-};
-
-
-PMD.prototype._dumpVertexIndices = function() {
-  var str = '';
-  str += '-- VertexIndices --\n';
-  for(var i = 0; i < this.vertexIndexCount; i++) {
-    str += this.vertexIndices[i].dump();
-  }
-  str += '\n';
-  return str;
-};
-
-
-PMD.prototype._dumpMaterials = function() {
-  var str = '';
-  str += '-- Materials --\n';
-  for(var i = 0; i < this.materialCount; i++) {
-    str += this.materials[i].dump();
-  }
-  str += '\n';
-  return str;
-};
-
-
-PMD.prototype._dumpBones = function() {
-  var str = '';
-  str += '-- Bones --\n';
-  for(var i = 0; i < this.boneCount; i++) {
-    str += this.bones[i].dump();
-  }
-  str += '\n';
-  return str;
-};
-
-
-PMD.prototype._dumpIKs = function() {
-  var str = '';
-  str += '-- IKs --\n';
-  for(var i = 0; i < this.ikCount; i++) {
-    str += this.iks[i].dump();
-  }
-  str += '\n';
-  return str;
-};
-
-
-PMD.prototype._dumpFaces = function() {
-  var str = '';
-  str += '-- Faces --\n';
-  for(var i = 0; i < this.faceCount; i++) {
-    str += this.faces[i].dump();
-  }
-  str += '\n';
-  return str;
-};
-
-
-PMD.prototype._dumpFaceDisplays = function() {
-  var str = '';
-  str += '-- Face Displays --\n';
-  for(var i = 0; i < this.faceDisplayCount; i++) {
-    str += this.faceDisplays[i].dump();
-  }
-  str += '\n';
-  return str;
-};
-
-
-PMD.prototype._dumpBoneFrameNames = function() {
-  var str = '';
-  str += '-- Bone Frame Names --\n';
-  for(var i = 0; i < this.boneFrameNameCount; i++) {
-    str += this.boneFrameNames[i].dump();
-  }
-  str += '\n';
-  return str;
-};
-
-
-PMD.prototype._dumpBoneDisplays = function() {
-  var str = '';
-  str += '-- Bone Displays --\n';
-  for(var i = 0; i < this.boneDisplayCount; i++) {
-    str += this.boneDisplays[i].dump();
-  }
-  str += '\n';
-  return str;
-};
-
-
-PMD.prototype._dumpEnglishBoneNames = function() {
-  var str = '';
-  str += '-- Bone Names(English) --\n';
-  for(var i = 0; i < this.boneCount; i++) {
-    str += this.englishBoneNames[i].dump();
-  }
-  str += '\n';
-  return str;
-};
-
-
-PMD.prototype._dumpEnglishFaceNames = function() {
-  var str = '';
-  str += '-- Face Names(English) --\n';
-  for(var i = 0; i < this.faceCount-1; i++) {
-    str += this.englishFaceNames[i].dump();
-  }
-  str += '\n';
-  return str;
-};
-
-
-PMD.prototype._dumpEnglishBoneFrameNames = function() {
-  var str = '';
-  str += '-- Bone Frame Names(English) --\n';
-  for(var i = 0; i < this.boneFrameNameCount; i++) {
-    str += this.englishBoneFrameNames[i].dump();
-  }
-  str += '\n';
-  return str;
-};
-
-
-PMD.prototype._dumpToonTextures = function() {
-  var str = '';
-  str += '-- Toon Textures --\n';
-  for(var i = 0; i < this.toonTextureCount; i++) {
-    str += this.toonTextures[i].dump();
-  }
-  str += '\n';
-  return str;
-};
-
-
-PMD.prototype._dumpRigidBodies = function() {
-  var str = '';
-  str += '-- Rigid Bodies --\n';
-  for(var i = 0; i < this.rigidBodyCount; i++) {
-    str += this.rigidBodies[i].dump();
-  }
-  str += '\n';
-  return str;
-};
-
-
-PMD.prototype._dumpJoints = function() {
-  var str = '';
-  str += '-- Joints --\n';
-  for(var i = 0; i < this.jointCount; i++) {
-    str += this.joints[i].dump();
-  }
-  str += '\n';
-  return str;
-};
-
-module.exports = PMD;
-
-},{"./PmdImageloader":21}],8:[function(require,module,exports){
-'use strict';
-function PMDBone(id) {
-  this.id = id;
-  this.name = null;
-  this.parentIndex = null;
-  this.tailIndex = null;
-  this.type = null;
-  this.ikIndex = null;
-  this.position = null;
-
-  this.motionIndex = null; // Note: be set by VMD;
-                           // TODO: remove and use id in VMD
-                           //       instead of motionIndex
-                           //       not to have VMD related info here
-}
-
-
-PMDBone.prototype.isKnee = function() {
-  // TODO: change this parameter if name type changes.
-  return this.name.indexOf('0x820xd00x820xb4') >= 0;
-};
-
-
-PMDBone.prototype.dump = function() {
-  var str = '';
-  str += 'id: '          + this.id          + '\n';
-  str += 'name: '        + this.name        + '\n';
-  str += 'parentIndex: ' + this.parentIndex + '\n';
-  str += 'tailIndex: '   + this.tailIndex   + '\n';
-  str += 'type: '        + this.type        + '\n';
-  str += 'ikIndex: '     + this.ikIndex     + '\n';
-  str += 'position: '    + this.position    + '\n';
-  return str;
-};
-
-
-PMDBone.prototype.toRight = function() {
-  this.position[2] = -this.position[2];
-};
-
-
-
-module.exports = PMDBone;
-
-},{}],9:[function(require,module,exports){
-'use strict';
-
 function PMDBoneDisplay(id) {
   this.id = id;
   this.index = null;
@@ -2044,7 +1539,7 @@ PMDBoneDisplay.prototype.dump = function() {
 
 module.exports = PMDBoneDisplay;
 
-},{}],10:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 'use strict';
 
 function PMDBoneFrameName(id) {
@@ -2062,7 +1557,7 @@ PMDBoneFrameName.prototype.dump = function() {
 
 module.exports = PMDBoneFrameName;
 
-},{}],11:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 'use strict';
 
 
@@ -2081,7 +1576,7 @@ PMDEnglishBoneFrameName.prototype.dump = function() {
 
 module.exports = PMDEnglishBoneFrameName;
 
-},{}],12:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 'use strict';
 
 function PMDEnglishBoneName(id) {
@@ -2099,7 +1594,7 @@ PMDEnglishBoneName.prototype.dump = function() {
 
 module.exports = PMDEnglishBoneName;
 
-},{}],13:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 'use strict';
 
 function PMDEnglishFaceName(id) {
@@ -2117,7 +1612,7 @@ PMDEnglishFaceName.prototype.dump = function() {
 
 module.exports = PMDEnglishFaceName;
 
-},{}],14:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 'use strict';
 
 function PMDEnglishHeader() {
@@ -2137,47 +1632,7 @@ PMDEnglishHeader.prototype.dump = function() {
 
 module.exports = PMDEnglishHeader;
 
-},{}],15:[function(require,module,exports){
-'use strict';
-function PMDFace(id) {
-  this.id = id;
-  this.name = null;
-  this.vertexCount = null;
-  this.type = null;
-  this.vertices = null;
-  this.done = false;
-
-  this.motionIndex = null; // Note: be set by VMD;
-                           // TODO: remove and use id in VMD
-                           //       instead of motionIndex
-                           //       not to have VMD related info here
-}
-
-
-PMDFace.prototype.dump = function() {
-  var str = '';
-  str += 'id: ' + this.id + '\n';
-  str += 'name: ' + this.name + '\n';
-  str += 'vertexCount: ' + this.vertexCount + '\n';
-  str += 'type: ' + this.type + '\n';
-
-  for(var i = 0; i < this.vertices.length; i++) {
-    str += this.vertices[i].dump();
-  }
-
-  return str;
-};
-
-
-PMDFace.prototype.toRight = function() {
-  for(var i = 0; i < this.vertices.length; i++) {
-    this.vertices[i].toRight();
-  }
-};
-
-module.exports = PMDFace;
-
-},{}],16:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 'use strict';
 
 function PMDFaceDisplay(id) {
@@ -2197,7 +1652,7 @@ PMDFaceDisplay.prototype.dump = function() {
 
 module.exports = PMDFaceDisplay;
 
-},{}],17:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 'use strict';
 
 
@@ -2227,7 +1682,7 @@ PMDFaceVertex.prototype.toRight = function() {
 
 module.exports = PMDFaceVertex;
 
-},{}],18:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 'use strict';
 var FileParser = require('../FileParser');
 var __inherit = require('../Inherit').__inherit;
@@ -2822,182 +2277,7 @@ PMDFileParser.prototype._parseJoint = function(p, n) {
 };
 module.exports = PMDFileParser;
 
-},{"../FileParser":1,"../Inherit":2,"./PMDBoneDisplay":9,"./PMDBoneFrameName":10,"./PMDEnglishBoneFrameName":11,"./PMDEnglishBoneName":12,"./PMDEnglishFaceName":13,"./PMDEnglishHeader":14,"./PMDFaceDisplay":16,"./PMDFaceVertex":17,"./PMDJoint":22,"./PMDRigidBody":25,"./PMDToonTexture":26,"./Pmd":7,"./PmdBone":8,"./PmdFace":15,"./PmdHeader":19,"./PmdIk":20,"./PmdMaterial":23,"./PmdVertex":27,"./PmdVertexIndex":28}],19:[function(require,module,exports){
-'use strict';
-function PMDHeader() {
-  this.magic = null;
-  this.version = null;
-  this.modelName = null;
-  this.comment = null;
-}
-
-
-PMDHeader.prototype.valid = function() {
-  return (this.magic == 'Pmd');
-};
-
-
-PMDHeader.prototype.dump = function() {
-  var str = '';
-  str += 'magic: '      + this.magic     + '\n';
-  str += 'version: '    + this.version   + '\n';
-  str += 'model_name: ' + this.modelName + '\n';
-  str += 'comment: '    + this.comment   + '\n';
-  return str;
-};
-
-
-module.exports = PMDHeader;
-
-},{}],20:[function(require,module,exports){
-'use strict';
-
-function PMDIK(id) {
-  this.id = id;
-  this.index = null;
-  this.targetBoneIndex = null;
-  this.chainLength = null;
-  this.iteration = null;
-  this.limitation = null;
-  this.childBoneIndices = null;
-}
-
-
-PMDIK.prototype.dump = function() {
-  var str = '';
-  str += 'id: '               + this.id               + '\n';
-  str += 'index: '            + this.index            + '\n';
-  str += 'targetBoneIndex: '  + this.targetBoneIndex  + '\n';
-  str += 'chainLength: '      + this.chainLength      + '\n';
-  str += 'iteration: '        + this.iteration        + '\n';
-  str += 'limitation: '       + this.limitation       + '\n';
-  str += 'childBoneIndices: ' + this.childBoneIndices + '\n';
-  return str;
-};
-module.exports = PMDIK;
-
-},{}],21:[function(require,module,exports){
-'use strict';
-
-function PMDImageLoader(pmd, baseURL) {
-  this.pmd = pmd;
-  this.baseURL = baseURL;
-
-  this.errorImageNum = 0;
-  this.loadedImageNum = 0;
-  this.noImageNum = 0;
-}
-
-
-/**
- * TODO: temporal
- */
-PMDImageLoader.prototype.load = function(callback) {
-  this.pmd.images.length = 0;
-  this.pmd.toonImages.length = 0;
-  this.pmd.sphereImages.length = 0;
-
-  this.errorImageNum = 0;
-  this.loadedImageNum = 0;
-  this.noImageNum = 0;
-
-  for(var i = 0; i < this.pmd.materialCount; i++) {
-    // PmdMaterial->convertedFileName
-    var fileName = this.pmd.materials[i].convertedFileName(); // tga -> png にファイル名変更
-    if(fileName == '' ||
-       fileName.indexOf('.spa') >= 0 ||
-       fileName.indexOf('.sph') >= 0) {
-      this.pmd.images[i] = this._generatePixelImage();
-      this.noImageNum++;
-      this._checkDone(callback);
-      continue;
-    }
-
-    var self = this;
-    this.pmd.images[i] = new Image();
-    this.pmd.images[i].onerror = function(event) {
-      self.errorImageNum++;
-      self._checkDone(callback);
-    }
-    this.pmd.images[i].onload = function(event) {
-      self.loadedImageNum++;
-      self._checkDone(callback);
-    }
-    this.pmd.images[i].src = this.baseURL + '/' + fileName;
-  }
-
-  // TODO: duplicated code
-  for(var i = 0; i < this.pmd.toonTextureCount; i++) {
-    var fileName = this.pmd.toonTextures[i].fileName;
-    if(fileName == '' ||
-       fileName.indexOf('.spa') >= 0 ||
-       fileName.indexOf('.sph') >= 0) {
-      this.pmd.toonImages[i] = this._generatePixelImage();
-      this.noImageNum++;
-      this._checkDone(callback);
-      continue;
-    }
-
-    var self = this;
-    this.pmd.toonImages[i] = new Image();
-    this.pmd.toonImages[i].onerror = function(event) {
-      self.errorImageNum++;
-      self._checkDone(callback);
-    }
-    this.pmd.toonImages[i].onload = function(event) {
-      self.loadedImageNum++;
-      self._checkDone(callback);
-    }
-    this.pmd.toonImages[i].src = this.baseURL + '/' + fileName;
-  }
-
-  // TODO: duplicated code
-  for(var i = 0; i < this.pmd.materialCount; i++) {
-    if(! this.pmd.materials[i].hasSphereTexture()) {
-      this.pmd.sphereImages[i] = this._generatePixelImage();
-      this.noImageNum++;
-      this._checkDone(callback);
-      continue;
-    }
-
-    var fileName = this.pmd.materials[i].sphereMapFileName();
-    var self = this;
-    this.pmd.sphereImages[i] = new Image();
-    this.pmd.sphereImages[i].onerror = function(event) {
-      self.errorImageNum++;
-      self._checkDone(callback);
-    }
-    this.pmd.sphereImages[i].onload = function(event) {
-      self.loadedImageNum++;
-      self._checkDone(callback);
-    }
-    this.pmd.sphereImages[i].src = this.baseURL + '/' + fileName;
-  }
-
-};
-
-
-PMDImageLoader.prototype._generatePixelImage = function() {
-  var cvs = document.createElement('canvas');
-  cvs.width = 1;
-  cvs.height = 1;
-  var ctx = cvs.getContext('2d');
-
-  ctx.fillStyle = 'rgb(255, 255, 255)';
-  ctx.fillRect(0, 0, 1, 1);
-  return cvs;
-};
-
-
-PMDImageLoader.prototype._checkDone = function(callback) {
-  if(this.loadedImageNum + this.noImageNum + this.errorImageNum
-       >= this.pmd.materialCount * 2 + this.pmd.toonTextureCount) {
-    callback(this.pmd);
-  }
-};
-module.exports = PMDImageLoader;
-
-},{}],22:[function(require,module,exports){
+},{"../FileParser":1,"../Inherit":2,"./PMDBoneDisplay":7,"./PMDBoneFrameName":8,"./PMDEnglishBoneFrameName":9,"./PMDEnglishBoneName":10,"./PMDEnglishFaceName":11,"./PMDEnglishHeader":12,"./PMDFaceDisplay":13,"./PMDFaceVertex":14,"./PMDJoint":16,"./PMDRigidBody":18,"./PMDToonTexture":19,"./Pmd":21,"./PmdBone":22,"./PmdFace":23,"./PmdHeader":24,"./PmdIk":25,"./PmdMaterial":27,"./PmdVertex":28,"./PmdVertexIndex":29}],16:[function(require,module,exports){
 'use strict';
 
 function PMDJoint(id) {
@@ -3042,101 +2322,7 @@ PMDJoint.prototype.toRight = function() {
 
 module.exports = PMDJoint;
 
-},{}],23:[function(require,module,exports){
-'use strict';
-
-function PMDMaterial(id) {
-  this.id = id;
-  this.color = null;
-  this.specularity = null;
-  this.specularColor = null;
-  this.mirrorColor = null;
-  this.tuneIndex = null;
-  this.edgeFlag = null;
-  this.vertexCount = null;
-  this.fileName = null;
-}
-
-
-/**
- * TODO: temporal
- */
-PMDMaterial.prototype.convertedFileName = function() {
-  var filename = this.fileName.replace('.tga', '.png');
-
-  // TODO: ignore sphere map so far
-  var index;
-  if((index = filename.lastIndexOf('*')) >= 0) {
-    filename = filename.substring(0, index);
-  }
-
-  return filename;
-};
-
-
-/**
- * TODO: temporal
- */
-PMDMaterial.prototype.hasSphereTexture = function() {
-  if(this.fileName.lastIndexOf('.sph') >= 0 ||
-     this.fileName.lastIndexOf('.spa') >= 0)
-    return true;
-
-  return false;
-};
-
-
-/**
- * TODO: temporal
- */
-PMDMaterial.prototype.isSphereMapAddition = function() {
-  var filename = this.fileName;
-
-  if(filename.lastIndexOf('.spa') >= 0)
-    return true;
-
-  return false;
-};
-
-
-/**
- * TODO: temporal
- */
-PMDMaterial.prototype.sphereMapFileName = function() {
-  var filename = this.fileName;
-  var index;
-  if((index = filename.lastIndexOf('*')) >= 0) {
-    filename = filename.slice(index+1);
-  }
-  if((index = filename.lastIndexOf('+')) >= 0) {
-    filename = filename.slice(index+1);
-  }
-  return filename;
-};
-
-
-PMDMaterial.prototype.hasToon = function() {
-  return this.tuneIndex >= 10 ? false : true;
-};
-
-
-PMDMaterial.prototype.dump = function() {
-  var str = '';
-  str += 'id: '            + this.id            + '\n';
-  str += 'color: '         + this.color         + '\n';
-  str += 'specularity: '   + this.specularity   + '\n';
-  str += 'specularColor: ' + this.specularColor + '\n';
-  str += 'mirrorColor: '   + this.mirrorColor   + '\n';
-  str += 'tuneIndex: '     + this.tuneIndex     + '\n';
-  str += 'edgeFlag: '      + this.edgeFlag      + '\n';
-  str += 'vertexCount: '   + this.vertexCount   + '\n';
-  str += 'fileName: '      + this.fileName      + '\n';
-  return str;
-};
-
-module.exports = PMDMaterial;
-
-},{}],24:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 
 /* global vec3,vec4,quat4,mat4 */
 'use strict';
@@ -3151,7 +2337,7 @@ function PMDModelView(layer, pmd, pmdView) {
   this.vmd = null;
   this.audio = null;
 
-  this.vtf = layer.generateTexture();
+  this.vtf = layer.generateTexture(document.createElement('img'));
   this.vtfWidth = layer.calculateVTFWidth(pmd.boneCount*7);
   var buffer = new ArrayBuffer(this.vtfWidth * this.vtfWidth * 4);
   this.vtfUint8Array = new Uint8Array(buffer);
@@ -4099,7 +3285,7 @@ PMDModelView.prototype._moveMorph = function(index, weight) {
 
 module.exports = PMDModelView;
 
-},{"../Physics/Physics":3}],25:[function(require,module,exports){
+},{"../Physics/Physics":3}],18:[function(require,module,exports){
 'use strict';
 
 function PMDRigidBody(id) {
@@ -4154,7 +3340,7 @@ PMDRigidBody.prototype.toRight = function() {
 
 module.exports = PMDRigidBody;
 
-},{}],26:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 'use strict';
 
 function PMDToonTexture(id) {
@@ -4172,66 +3358,7 @@ PMDToonTexture.prototype.dump = function() {
 
 module.exports = PMDToonTexture;
 
-},{}],27:[function(require,module,exports){
-'use strict';
-function PMDVertex(id) {
-  this.id = id;
-  this.position = null;
-  this.normal = null;
-  this.uv = null;
-  this.boneIndices = null;
-  this.boneWeight = null;
-  this.edgeFlag = null;
-  this.boneWeightFloat1 = null;
-  this.boneWeightFloat2 = null;
-}
-
-
-PMDVertex.prototype.setup = function() {
-  this.boneWeightFloat1 = this.boneWeight/100;
-  this.boneWeightFloat2 = (100-this.boneWeight)/100;
-};
-
-
-PMDVertex.prototype.dump = function() {
-  var str = '';
-  str += 'id: '          + this.id          + '\n';
-  str += 'position: '    + this.position    + '\n';
-  str += 'normal: '      + this.normal      + '\n';
-  str += 'uv: '          + this.uv          + '\n';
-  str += 'boneIndices: ' + this.boneIndices + '\n';
-  str += 'boneWeight: '  + this.boneWeight  + '\n';
-  str += 'edgeFlag: '    + this.edgeFlag    + '\n';
-  return str;
-};
-
-
-PMDVertex.prototype.toRight = function() {
-  this.position[2] = -this.position[2];
-  this.normal[2] = -this.normal[2];
-};
-module.exports = PMDVertex;
-
-},{}],28:[function(require,module,exports){
-'use strict';
-function PMDVertexIndex(id) {
-  this.id = id;
-  this.index = null;
-}
-
-
-PMDVertexIndex.prototype.dump = function() {
-  var str = '';
-  str += 'id: '    + this.id    + '\n';
-  str += 'index: ' + this.index + '\n';
-  return str;
-};
-
-
-
-module.exports = PMDVertexIndex;
-
-},{}],29:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 
 /* global vec3,vec4,quat4,mat4 */
 'use strict';
@@ -4906,6 +4033,879 @@ PMDView.prototype._moveLight = function() {
 };
 module.exports = PMDView;
 
+},{}],21:[function(require,module,exports){
+'use strict';
+
+var PMDImageLoader = require('./PmdImageloader');
+/**
+ * instance of classes in this file should be created and
+ * their fields should be set by PMDFileParser.
+ * TODO: rename fields to appropriate ones.
+ */
+function PMD() {
+  this.header = null;
+  this.englishHeader = null;
+  this.vertexCount = null;
+  this.vertexIndexCount = null;
+  this.materialCount = null;
+  this.boneCount = null;
+  this.ikCount = null;
+  this.faceCount = null;
+  this.faceDisplayCount = null;
+  this.boneFrameNameCount = null;
+  this.boneDisplayCount = null;
+  this.toonTextureCount = null;
+  this.rigidBodyCount = null;
+  this.jointCount = null;
+
+  this.vertices = [];
+  this.vertexIndices = []
+  this.materials = [];
+  this.bones = [];
+  this.iks = [];
+  this.faces = [];
+  this.faceDisplays = [];
+  this.boneFrameNames = [];
+  this.boneDisplays = [];
+  this.englishBoneNames = [];
+  this.englishFaceNames = [];
+  this.englishBoneFrameNames = [];
+  this.toonTextures = [];
+  this.rigidBodies = [];
+  this.joints = [];
+
+  this.bonesHash = {};
+  this.facesHash = {};
+
+  this.images = [];
+  this.toonImages = [];
+  this.sphereImages = [];
+
+  this.centerBone = {};
+  this.leftFootBone = {};
+  this.rightFootBone = {};
+  this.leftEyeBone = {};
+  this.rightEyeBone = {};
+};
+
+
+PMD.prototype.valid = function() {
+  return this.header.valid();
+};
+
+
+PMD.prototype.getParentBone = function(bone) {
+  return this.bones[bone.parentIndex];
+};
+
+
+PMD.prototype.loadImages = function(baseURL, callback) {
+  var loader = new PMDImageLoader(this, baseURL);
+  loader.load(callback);
+};
+
+
+PMD.prototype.setup = function() {
+  for(var i = 0; i < this.vertexCount; i++) {
+    this.vertices[i].setup();
+  }
+
+  for(var i = 0; i < this.boneCount; i++) {
+    this.bonesHash[this.bones[i].name] = this.bones[i];
+  }
+
+  for(var i = 0; i < this.faceCount; i++) {
+    this.facesHash[this.faces[i].name] = this.faces[i];
+  }
+//  this.toRight();
+
+  this._keepSomeBonesInfo();
+};
+
+
+PMD.prototype.toRight = function() {
+  for(var i = 0; i < this.vertexCount; i++) {
+    this.vertices[i].toRight();
+  }
+
+  for(var i = 0; i < this.boneCount; i++) {
+    this.bones[i].toRight();
+  }
+
+  for(var i = 0; i < this.faceCount; i++) {
+    this.faces[i].toRight();
+  }
+
+  for(var i = 0; i < this.rigidBodyCount; i++) {
+    this.rigidBodies[i].toRight();
+  }
+
+  for(var i = 0; i < this.jointCount; i++) {
+    this.joints[i].toRight();
+  }
+};
+
+
+/**
+ * TODO: change strings if sjis-lib is used
+ */
+PMD.prototype._keepSomeBonesInfo = function() {
+  // �Z���^�[, ������, �E����, ����, �E��
+  this._keepBoneInfo(this.centerBone,    '0x830x5a0x830x930x830x5e0x810x5b');
+  this._keepBoneInfo(this.leftFootBone,  '0x8d0xb60x910xab0x8e0xf1');
+  this._keepBoneInfo(this.rightFootBone, '0x890x450x910xab0x8e0xf1');
+  this._keepBoneInfo(this.leftEyeBone,   '0x8d0xb60x960xda');
+  this._keepBoneInfo(this.rightEyeBone,  '0x890x450x960xda');
+};
+
+
+PMD.prototype._keepBoneInfo = function(obj, name) {
+  var boneNum = this._findBoneNumberByName(name);
+  if(boneNum !== null) {
+    var bone = this.bones[boneNum];
+    obj.pos = this._getAveragePositionOfBone(bone);
+    obj.id = boneNum;
+    obj.bone = bone;
+    obj.posFromBone = [];
+    obj.posFromBone[0] = obj.pos[0] - bone.position[0];
+    obj.posFromBone[1] = obj.pos[1] - bone.position[1];
+    obj.posFromBone[2] = obj.pos[2] - bone.position[2];
+  } else {
+    obj.pos = null;
+    obj.id = null;
+    obj.bone = null;
+    obj.posFromBone = null;
+  }
+};
+
+
+PMD.prototype._findBoneNumberByName = function(name) {
+  for(var i = 0; i < this.boneCount; i++) {
+    if(this.bones[i].name == name)
+      return i;
+  }
+  return null;
+};
+
+
+/**
+ * TODO: consider the algorithm again.
+ */
+PMD.prototype._getAveragePositionOfBone = function(bone) {
+  var num = 0;
+  var pos = [0, 0, 0];
+  for(var i = 0; i < this.vertexCount; i++) {
+    var v = this.vertices[i];
+    // TODO: consider boneWeight?
+    if(v.boneIndices[0] == bone.id || v.boneIndices[1] == bone.id) {
+      pos[0] += v.position[0];
+      pos[1] += v.position[1];
+      pos[2] += v.position[2];
+      num++;
+    }
+/*
+    if(v.boneIndices[0] == bone.id) {
+      pos[0] += v.position[0] * (v.boneIndex / 100);
+      pos[1] += v.position[1] * (v.boneIndex / 100);
+      pos[2] += v.position[2] * (v.boneIndex / 100);
+      num++;
+    } else if(v.boneIndices[1] == bone.id) {
+      pos[0] += v.position[0] * ((100 - v.boneIndex) / 100);
+      pos[1] += v.position[1] * ((100 - v.boneIndex) / 100);
+      pos[2] += v.position[2] * ((100 - v.boneIndex) / 100);
+      num++;
+    }
+*/
+  }
+  if(num != 0) {
+    pos[0] = pos[0] / num;
+    pos[1] = pos[1] / num;
+    pos[2] = pos[2] / num;
+  }
+  return pos;
+};
+
+
+PMD.prototype.getBoneNames = function() {
+  var array = [];
+  for(var i = 0; i < this.boneCount; i++) {
+    array[i] = this.bones[i].name;
+  }
+  return array;
+};
+
+
+PMD.prototype.getFaceNames = function() {
+  var array = [];
+  for(var i = 0; i < this.faceCount; i++) {
+    array[i] = this.faces[i].name;
+  }
+  return array;
+};
+
+
+PMD.prototype.dump = function() {
+  var str = '';
+
+  str += 'vertexCount: '        + this.vertexCount        + '\n';
+  str += 'vertexIndexCount: '   + this.vertexIndexCount   + '\n';
+  str += 'materialCount: '      + this.materialCount      + '\n';
+  str += 'boneCount: '          + this.boneCount          + '\n';
+  str += 'ikCount: '            + this.ikCount            + '\n';
+  str += 'faceCount: '          + this.faceCount          + '\n';
+  str += 'faceDisplayCount: '   + this.faceDisplayCount   + '\n';
+  str += 'boneFrameNameCount: ' + this.boneFrameNameCount + '\n';
+  str += 'boneDisplayCount: '   + this.boneDisplayCount   + '\n';
+  str += 'toonTextureCount: '   + this.toonTextureCount   + '\n';
+  str += 'rigidBodyCount: '     + this.rigidBodyCount     + '\n';
+  str += 'jointCount: '         + this.jointCount         + '\n';
+  str += '\n';
+
+  str += this._dumpHeader();
+  str += this._dumpVertices();
+  str += this._dumpVertexIndices();
+  str += this._dumpMaterials();
+  str += this._dumpBones();
+  str += this._dumpIKs();
+  str += this._dumpFaces();
+  str += this._dumpfaceDisplays();
+  str += this._dumpBoneFrameNames();
+  str += this._dumpBoneDisplays();
+  str += this._dumpEnglishHeader();
+  str += this._dumpEnglishBoneNames();
+  str += this._dumpEnglishFaceNames();
+  str += this._dumpToonTextures();
+  str += this._dumpRigidBodies();
+  str += this._dumpJoints();
+
+  return str;
+};
+
+
+PMD.prototype.boneNumsOfMaterials = function() {
+  var offset = 0;
+  var result = [];
+  for(var i = 0; i < this.materialCount; i++) {
+    var array = [];
+    for(var j = 0; j < this.boneCount; j++) {
+      array[j] = 0;
+    }
+
+    var count = 0;
+    var num = this.materials[i].vertexCount;
+    for(var j = 0; j < num; j++) {
+      var v = this.vertices[this.vertexIndices[offset + j].index];
+      for(var k = 0; k < v.boneIndices.length; k++) {
+        var index = v.boneIndices[k];
+        if(array[index] == 0)
+          count++;
+        array[index]++;
+      }
+    }
+    result.push(count);
+    offset += num;
+  }
+  return result;
+};
+
+
+PMD.prototype._dumpHeader = function() {
+  var str = '';
+  str += '-- Header --\n';
+  str += this.header.dump();
+  str += '\n';
+  return str;
+};
+
+
+PMD.prototype._dumpEnglishHeader = function() {
+  var str = '';
+  str += '-- Header(English) --\n';
+  str += this.englishHeader.dump();
+  str += '\n';
+  return str;
+};
+
+
+PMD.prototype._dumpVertices = function() {
+  var str = '';
+  str += '-- Vertices --\n';
+  for(var i = 0; i < this.vertexCount; i++) {
+    str += this.vertices[i].dump();
+  }
+  str += '\n';
+  return str;
+};
+
+
+PMD.prototype._dumpVertexIndices = function() {
+  var str = '';
+  str += '-- VertexIndices --\n';
+  for(var i = 0; i < this.vertexIndexCount; i++) {
+    str += this.vertexIndices[i].dump();
+  }
+  str += '\n';
+  return str;
+};
+
+
+PMD.prototype._dumpMaterials = function() {
+  var str = '';
+  str += '-- Materials --\n';
+  for(var i = 0; i < this.materialCount; i++) {
+    str += this.materials[i].dump();
+  }
+  str += '\n';
+  return str;
+};
+
+
+PMD.prototype._dumpBones = function() {
+  var str = '';
+  str += '-- Bones --\n';
+  for(var i = 0; i < this.boneCount; i++) {
+    str += this.bones[i].dump();
+  }
+  str += '\n';
+  return str;
+};
+
+
+PMD.prototype._dumpIKs = function() {
+  var str = '';
+  str += '-- IKs --\n';
+  for(var i = 0; i < this.ikCount; i++) {
+    str += this.iks[i].dump();
+  }
+  str += '\n';
+  return str;
+};
+
+
+PMD.prototype._dumpFaces = function() {
+  var str = '';
+  str += '-- Faces --\n';
+  for(var i = 0; i < this.faceCount; i++) {
+    str += this.faces[i].dump();
+  }
+  str += '\n';
+  return str;
+};
+
+
+PMD.prototype._dumpFaceDisplays = function() {
+  var str = '';
+  str += '-- Face Displays --\n';
+  for(var i = 0; i < this.faceDisplayCount; i++) {
+    str += this.faceDisplays[i].dump();
+  }
+  str += '\n';
+  return str;
+};
+
+
+PMD.prototype._dumpBoneFrameNames = function() {
+  var str = '';
+  str += '-- Bone Frame Names --\n';
+  for(var i = 0; i < this.boneFrameNameCount; i++) {
+    str += this.boneFrameNames[i].dump();
+  }
+  str += '\n';
+  return str;
+};
+
+
+PMD.prototype._dumpBoneDisplays = function() {
+  var str = '';
+  str += '-- Bone Displays --\n';
+  for(var i = 0; i < this.boneDisplayCount; i++) {
+    str += this.boneDisplays[i].dump();
+  }
+  str += '\n';
+  return str;
+};
+
+
+PMD.prototype._dumpEnglishBoneNames = function() {
+  var str = '';
+  str += '-- Bone Names(English) --\n';
+  for(var i = 0; i < this.boneCount; i++) {
+    str += this.englishBoneNames[i].dump();
+  }
+  str += '\n';
+  return str;
+};
+
+
+PMD.prototype._dumpEnglishFaceNames = function() {
+  var str = '';
+  str += '-- Face Names(English) --\n';
+  for(var i = 0; i < this.faceCount-1; i++) {
+    str += this.englishFaceNames[i].dump();
+  }
+  str += '\n';
+  return str;
+};
+
+
+PMD.prototype._dumpEnglishBoneFrameNames = function() {
+  var str = '';
+  str += '-- Bone Frame Names(English) --\n';
+  for(var i = 0; i < this.boneFrameNameCount; i++) {
+    str += this.englishBoneFrameNames[i].dump();
+  }
+  str += '\n';
+  return str;
+};
+
+
+PMD.prototype._dumpToonTextures = function() {
+  var str = '';
+  str += '-- Toon Textures --\n';
+  for(var i = 0; i < this.toonTextureCount; i++) {
+    str += this.toonTextures[i].dump();
+  }
+  str += '\n';
+  return str;
+};
+
+
+PMD.prototype._dumpRigidBodies = function() {
+  var str = '';
+  str += '-- Rigid Bodies --\n';
+  for(var i = 0; i < this.rigidBodyCount; i++) {
+    str += this.rigidBodies[i].dump();
+  }
+  str += '\n';
+  return str;
+};
+
+
+PMD.prototype._dumpJoints = function() {
+  var str = '';
+  str += '-- Joints --\n';
+  for(var i = 0; i < this.jointCount; i++) {
+    str += this.joints[i].dump();
+  }
+  str += '\n';
+  return str;
+};
+
+module.exports = PMD;
+
+},{"./PmdImageloader":26}],22:[function(require,module,exports){
+'use strict';
+function PMDBone(id) {
+  this.id = id;
+  this.name = null;
+  this.parentIndex = null;
+  this.tailIndex = null;
+  this.type = null;
+  this.ikIndex = null;
+  this.position = null;
+
+  this.motionIndex = null; // Note: be set by VMD;
+                           // TODO: remove and use id in VMD
+                           //       instead of motionIndex
+                           //       not to have VMD related info here
+}
+
+
+PMDBone.prototype.isKnee = function() {
+  // TODO: change this parameter if name type changes.
+  return this.name.indexOf('0x820xd00x820xb4') >= 0;
+};
+
+
+PMDBone.prototype.dump = function() {
+  var str = '';
+  str += 'id: '          + this.id          + '\n';
+  str += 'name: '        + this.name        + '\n';
+  str += 'parentIndex: ' + this.parentIndex + '\n';
+  str += 'tailIndex: '   + this.tailIndex   + '\n';
+  str += 'type: '        + this.type        + '\n';
+  str += 'ikIndex: '     + this.ikIndex     + '\n';
+  str += 'position: '    + this.position    + '\n';
+  return str;
+};
+
+
+PMDBone.prototype.toRight = function() {
+  this.position[2] = -this.position[2];
+};
+
+
+
+module.exports = PMDBone;
+
+},{}],23:[function(require,module,exports){
+'use strict';
+function PMDFace(id) {
+  this.id = id;
+  this.name = null;
+  this.vertexCount = null;
+  this.type = null;
+  this.vertices = null;
+  this.done = false;
+
+  this.motionIndex = null; // Note: be set by VMD;
+                           // TODO: remove and use id in VMD
+                           //       instead of motionIndex
+                           //       not to have VMD related info here
+}
+
+
+PMDFace.prototype.dump = function() {
+  var str = '';
+  str += 'id: ' + this.id + '\n';
+  str += 'name: ' + this.name + '\n';
+  str += 'vertexCount: ' + this.vertexCount + '\n';
+  str += 'type: ' + this.type + '\n';
+
+  for(var i = 0; i < this.vertices.length; i++) {
+    str += this.vertices[i].dump();
+  }
+
+  return str;
+};
+
+
+PMDFace.prototype.toRight = function() {
+  for(var i = 0; i < this.vertices.length; i++) {
+    this.vertices[i].toRight();
+  }
+};
+
+module.exports = PMDFace;
+
+},{}],24:[function(require,module,exports){
+'use strict';
+function PMDHeader() {
+  this.magic = null;
+  this.version = null;
+  this.modelName = null;
+  this.comment = null;
+}
+
+
+PMDHeader.prototype.valid = function() {
+  return (this.magic == 'Pmd');
+};
+
+
+PMDHeader.prototype.dump = function() {
+  var str = '';
+  str += 'magic: '      + this.magic     + '\n';
+  str += 'version: '    + this.version   + '\n';
+  str += 'model_name: ' + this.modelName + '\n';
+  str += 'comment: '    + this.comment   + '\n';
+  return str;
+};
+
+
+module.exports = PMDHeader;
+
+},{}],25:[function(require,module,exports){
+'use strict';
+
+function PMDIK(id) {
+  this.id = id;
+  this.index = null;
+  this.targetBoneIndex = null;
+  this.chainLength = null;
+  this.iteration = null;
+  this.limitation = null;
+  this.childBoneIndices = null;
+}
+
+
+PMDIK.prototype.dump = function() {
+  var str = '';
+  str += 'id: '               + this.id               + '\n';
+  str += 'index: '            + this.index            + '\n';
+  str += 'targetBoneIndex: '  + this.targetBoneIndex  + '\n';
+  str += 'chainLength: '      + this.chainLength      + '\n';
+  str += 'iteration: '        + this.iteration        + '\n';
+  str += 'limitation: '       + this.limitation       + '\n';
+  str += 'childBoneIndices: ' + this.childBoneIndices + '\n';
+  return str;
+};
+module.exports = PMDIK;
+
+},{}],26:[function(require,module,exports){
+'use strict';
+
+function PMDImageLoader(pmd, baseURL) {
+  this.pmd = pmd;
+  this.baseURL = baseURL;
+
+  this.errorImageNum = 0;
+  this.loadedImageNum = 0;
+  this.noImageNum = 0;
+}
+
+
+/**
+ * TODO: temporal
+ */
+PMDImageLoader.prototype.load = function(callback) {
+  this.pmd.images.length = 0;
+  this.pmd.toonImages.length = 0;
+  this.pmd.sphereImages.length = 0;
+
+  this.errorImageNum = 0;
+  this.loadedImageNum = 0;
+  this.noImageNum = 0;
+
+  for(var i = 0; i < this.pmd.materialCount; i++) {
+    // PmdMaterial->convertedFileName
+    var fileName = this.pmd.materials[i].convertedFileName(); // tga -> png にファイル名変更
+    if(fileName == '' ||
+       fileName.indexOf('.spa') >= 0 ||
+       fileName.indexOf('.sph') >= 0) {
+      this.pmd.images[i] = this._generatePixelImage();
+      this.noImageNum++;
+      this._checkDone(callback);
+      continue;
+    }
+
+    var self = this;
+    this.pmd.images[i] = new Image();
+    this.pmd.images[i].onerror = function(event) {
+      self.errorImageNum++;
+      self._checkDone(callback);
+    }
+    this.pmd.images[i].onload = function(event) {
+      self.loadedImageNum++;
+      self._checkDone(callback);
+    }
+    this.pmd.images[i].src = this.baseURL + '/' + fileName;
+  }
+
+  // TODO: duplicated code
+  for(var i = 0; i < this.pmd.toonTextureCount; i++) {
+    var fileName = this.pmd.toonTextures[i].fileName;
+    if(fileName == '' ||
+       fileName.indexOf('.spa') >= 0 ||
+       fileName.indexOf('.sph') >= 0) {
+      this.pmd.toonImages[i] = this._generatePixelImage();
+      this.noImageNum++;
+      this._checkDone(callback);
+      continue;
+    }
+
+    var self = this;
+    this.pmd.toonImages[i] = new Image();
+    this.pmd.toonImages[i].onerror = function(event) {
+      self.errorImageNum++;
+      self._checkDone(callback);
+    }
+    this.pmd.toonImages[i].onload = function(event) {
+      self.loadedImageNum++;
+      self._checkDone(callback);
+    }
+    this.pmd.toonImages[i].src = this.baseURL + '/' + fileName;
+  }
+
+  // TODO: duplicated code
+  for(var i = 0; i < this.pmd.materialCount; i++) {
+    if(! this.pmd.materials[i].hasSphereTexture()) {
+      this.pmd.sphereImages[i] = this._generatePixelImage();
+      this.noImageNum++;
+      this._checkDone(callback);
+      continue;
+    }
+
+    var fileName = this.pmd.materials[i].sphereMapFileName();
+    var self = this;
+    this.pmd.sphereImages[i] = new Image();
+    this.pmd.sphereImages[i].onerror = function(event) {
+      self.errorImageNum++;
+      self._checkDone(callback);
+    }
+    this.pmd.sphereImages[i].onload = function(event) {
+      self.loadedImageNum++;
+      self._checkDone(callback);
+    }
+    this.pmd.sphereImages[i].src = this.baseURL + '/' + fileName;
+  }
+
+};
+
+
+PMDImageLoader.prototype._generatePixelImage = function() {
+  var cvs = document.createElement('canvas');
+  cvs.width = 1;
+  cvs.height = 1;
+  var ctx = cvs.getContext('2d');
+
+  ctx.fillStyle = 'rgb(255, 255, 255)';
+  ctx.fillRect(0, 0, 1, 1);
+  return cvs;
+};
+
+
+PMDImageLoader.prototype._checkDone = function(callback) {
+  if(this.loadedImageNum + this.noImageNum + this.errorImageNum
+       >= this.pmd.materialCount * 2 + this.pmd.toonTextureCount) {
+    callback(this.pmd);
+  }
+};
+module.exports = PMDImageLoader;
+
+},{}],27:[function(require,module,exports){
+'use strict';
+
+function PMDMaterial(id) {
+  this.id = id;
+  this.color = null;
+  this.specularity = null;
+  this.specularColor = null;
+  this.mirrorColor = null;
+  this.tuneIndex = null;
+  this.edgeFlag = null;
+  this.vertexCount = null;
+  this.fileName = null;
+}
+
+
+/**
+ * TODO: temporal
+ */
+PMDMaterial.prototype.convertedFileName = function() {
+  var filename = this.fileName.replace('.tga', '.png');
+
+  // TODO: ignore sphere map so far
+  var index;
+  if((index = filename.lastIndexOf('*')) >= 0) {
+    filename = filename.substring(0, index);
+  }
+
+  return filename;
+};
+
+
+/**
+ * TODO: temporal
+ */
+PMDMaterial.prototype.hasSphereTexture = function() {
+  if(this.fileName.lastIndexOf('.sph') >= 0 ||
+     this.fileName.lastIndexOf('.spa') >= 0)
+    return true;
+
+  return false;
+};
+
+
+/**
+ * TODO: temporal
+ */
+PMDMaterial.prototype.isSphereMapAddition = function() {
+  var filename = this.fileName;
+
+  if(filename.lastIndexOf('.spa') >= 0)
+    return true;
+
+  return false;
+};
+
+
+/**
+ * TODO: temporal
+ */
+PMDMaterial.prototype.sphereMapFileName = function() {
+  var filename = this.fileName;
+  var index;
+  if((index = filename.lastIndexOf('*')) >= 0) {
+    filename = filename.slice(index+1);
+  }
+  if((index = filename.lastIndexOf('+')) >= 0) {
+    filename = filename.slice(index+1);
+  }
+  return filename;
+};
+
+
+PMDMaterial.prototype.hasToon = function() {
+  return this.tuneIndex >= 10 ? false : true;
+};
+
+
+PMDMaterial.prototype.dump = function() {
+  var str = '';
+  str += 'id: '            + this.id            + '\n';
+  str += 'color: '         + this.color         + '\n';
+  str += 'specularity: '   + this.specularity   + '\n';
+  str += 'specularColor: ' + this.specularColor + '\n';
+  str += 'mirrorColor: '   + this.mirrorColor   + '\n';
+  str += 'tuneIndex: '     + this.tuneIndex     + '\n';
+  str += 'edgeFlag: '      + this.edgeFlag      + '\n';
+  str += 'vertexCount: '   + this.vertexCount   + '\n';
+  str += 'fileName: '      + this.fileName      + '\n';
+  return str;
+};
+
+module.exports = PMDMaterial;
+
+},{}],28:[function(require,module,exports){
+'use strict';
+function PMDVertex(id) {
+  this.id = id;
+  this.position = null;
+  this.normal = null;
+  this.uv = null;
+  this.boneIndices = null;
+  this.boneWeight = null;
+  this.edgeFlag = null;
+  this.boneWeightFloat1 = null;
+  this.boneWeightFloat2 = null;
+}
+
+
+PMDVertex.prototype.setup = function() {
+  this.boneWeightFloat1 = this.boneWeight/100;
+  this.boneWeightFloat2 = (100-this.boneWeight)/100;
+};
+
+
+PMDVertex.prototype.dump = function() {
+  var str = '';
+  str += 'id: '          + this.id          + '\n';
+  str += 'position: '    + this.position    + '\n';
+  str += 'normal: '      + this.normal      + '\n';
+  str += 'uv: '          + this.uv          + '\n';
+  str += 'boneIndices: ' + this.boneIndices + '\n';
+  str += 'boneWeight: '  + this.boneWeight  + '\n';
+  str += 'edgeFlag: '    + this.edgeFlag    + '\n';
+  return str;
+};
+
+
+PMDVertex.prototype.toRight = function() {
+  this.position[2] = -this.position[2];
+  this.normal[2] = -this.normal[2];
+};
+module.exports = PMDVertex;
+
+},{}],29:[function(require,module,exports){
+'use strict';
+function PMDVertexIndex(id) {
+  this.id = id;
+  this.index = null;
+}
+
+
+PMDVertexIndex.prototype.dump = function() {
+  var str = '';
+  str += 'id: '    + this.id    + '\n';
+  str += 'index: ' + this.index + '\n';
+  return str;
+};
+
+
+
+module.exports = PMDVertexIndex;
+
 },{}],30:[function(require,module,exports){
 'use strict';
 /**
@@ -4933,6 +4933,198 @@ function __toString(type, num, figure) {
 module.exports = __toString;
 
 },{}],31:[function(require,module,exports){
+'use strict';
+
+var FileParser = require('../FileParser');
+var __inherit = require('../Inherit').__inherit;
+var VMD = require('./Vmd');
+var VMDHeader = require('./VmdHeader');
+var VMDMotion = require('./VmdMotion');
+var VMDFace = require('./VmdFace');
+var VMDCamera = require('./VmdCamera');
+var VMDLight = require('./VmdLight');
+
+function VMDFileParser(buffer) {
+  this.parent = FileParser;
+  this.parent.call(this, buffer);
+}
+__inherit(VMDFileParser, FileParser);
+
+VMDFileParser.prototype._HEADER_STRUCTURE = {
+  magic: {type: 'char', isArray: true, size: 30},
+  modelName: {type: 'char', isArray: true, size: 20}
+};
+
+VMDFileParser.prototype._MOTIONS_STRUCTURE = {
+  count: {type: 'uint32'},
+  motions: {type: 'object', isArray: true, size: 'count'}
+};
+
+VMDFileParser.prototype._MOTION_STRUCTURE = {
+  boneName: {type: 'strings', isArray: true, size: 15},
+  frameNum: {type: 'uint32'},
+  location: {type: 'float', isArray: true, size: 3},
+  rotation: {type: 'float', isArray: true, size: 4},
+  interpolation: {type: 'uint8', isArray: true, size: 64}
+};
+
+VMDFileParser.prototype._FACES_STRUCTURE = {
+  count: {type: 'uint32'},
+  faces: {type: 'object', isArray: true, size: 'count'}
+};
+
+VMDFileParser.prototype._FACE_STRUCTURE = {
+  name: {type: 'strings', isArray: true, size: 15},
+  frameNum: {type: 'uint32'},
+  weight: {type: 'float'}
+};
+
+VMDFileParser.prototype._CAMERAS_STRUCTURE = {
+  count: {type: 'uint32'},
+  cameras: {type: 'object', isArray: true, size: 'count'}
+};
+
+VMDFileParser.prototype._CAMERA_STRUCTURE = {
+  frameNum: {type: 'uint32'},
+  length: {type: 'float'},
+  location: {type: 'float', isArray: true, size: 3},
+  rotation: {type: 'float', isArray: true, size: 3},
+  interpolation: {type: 'uint8', isArray: true, size: 24},
+  angle: {type: 'uint32'},
+  perspective: {type: 'uint8'}
+};
+
+VMDFileParser.prototype._LIGHTS_STRUCTURE = {
+  count: {type: 'uint32'},
+  lights: {type: 'object', isArray: true, size: 'count'}
+};
+
+VMDFileParser.prototype._LIGHT_STRUCTURE = {
+  frameNum: {type: 'uint32'},
+  color: {type: 'float', isArray: true, size: 3},
+  location: {type: 'float', isArray: true, size: 3},
+};
+
+
+VMDFileParser.prototype.parse = function() {
+  this.offset = 0;
+
+  var v = new VMD();
+  this._parseHeader(v);
+  this._parseMotions(v);
+  this._parseFaces(v);
+  this._parseCameras(v);
+  this._parseLights(v);
+
+  return v;
+};
+
+
+/**
+ * TODO: be more strict.
+ */
+VMDFileParser.prototype.valid = function() {
+  var tmp = this.offset;
+  this.offset = 0;
+
+  var v = new VMD();
+  this._parseHeader(v);
+
+  this.offset = tmp;
+
+  return v.valid();
+};
+
+
+VMDFileParser.prototype._parseHeader = function(v) {
+  var s = this._HEADER_STRUCTURE;
+  v.header = new VMDHeader();
+  this._parseObject(v.header, s);
+};
+
+
+VMDFileParser.prototype._parseMotions = function(v) {
+  var s = this._MOTIONS_STRUCTURE;
+  v.motionCount = this._getValue(s.count, this.offset);
+  this.offset += this._sizeof(s.count);
+
+  v.motions.length = 0;
+  for(var i = 0; i < v.motionCount; i++) {
+    this._parseMotion(v, i);
+  }
+};
+
+
+VMDFileParser.prototype._parseMotion = function(v, n) {
+  var s = this._MOTION_STRUCTURE;
+  var m = new VMDMotion(n);
+  this._parseObject(m, s);
+  v.motions[n] = m;
+};
+
+
+VMDFileParser.prototype._parseFaces = function(v) {
+  var s = this._FACES_STRUCTURE;
+  v.faceCount = this._getValue(s.count, this.offset);
+  this.offset += this._sizeof(s.count);
+
+  v.faces.length = 0;
+  for(var i = 0; i < v.faceCount; i++) {
+    this._parseFace(v, i);
+  }
+};
+
+
+VMDFileParser.prototype._parseFace = function(v, n) {
+  var s = this._FACE_STRUCTURE;
+  var f = new VMDFace(n);
+  this._parseObject(f, s);
+  v.faces[n] = f;
+};
+
+
+VMDFileParser.prototype._parseCameras = function(v) {
+  var s = this._CAMERAS_STRUCTURE;
+  v.cameraCount = this._getValue(s.count, this.offset);
+  this.offset += this._sizeof(s.count);
+
+  v.cameras.length = 0;
+  for(var i = 0; i < v.cameraCount; i++) {
+    this._parseCamera(v, i);
+  }
+};
+
+
+VMDFileParser.prototype._parseCamera = function(v, n) {
+  var s = this._CAMERA_STRUCTURE;
+  var c = new VMDCamera(n);
+  this._parseObject(c, s);
+  v.cameras[n] = c;
+};
+
+
+VMDFileParser.prototype._parseLights = function(v) {
+  var s = this._LIGHTS_STRUCTURE;
+  v.lightCount = this._getValue(s.count, this.offset);
+  this.offset += this._sizeof(s.count);
+
+  v.lights.length = 0;
+  for(var i = 0; i < v.lightCount; i++) {
+    this._parseLight(v, i);
+  }
+};
+
+
+VMDFileParser.prototype._parseLight = function(v, n) {
+  var s = this._LIGHT_STRUCTURE;
+  var l = new VMDLight(n);
+  this._parseObject(l, s);
+  v.lights[n] = l;
+};
+
+module.exports = VMDFileParser;
+
+},{"../FileParser":1,"../Inherit":2,"./Vmd":32,"./VmdCamera":33,"./VmdFace":34,"./VmdHeader":35,"./VmdLight":36,"./VmdMotion":37}],32:[function(require,module,exports){
 
 /* global vec3,vec4,quat4,mat4 */
 'use strict';
@@ -5624,7 +5816,7 @@ VMD.prototype._dumpLights = function() {
 
 module.exports = VMD;
 
-},{}],32:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 'use strict';
 
 function VMDCamera(id) {
@@ -5658,7 +5850,7 @@ VMDCamera.prototype.dump = function() {
 };
 module.exports = VMDCamera;
 
-},{}],33:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
  'use strict';
 
 function VMDFace(id) {
@@ -5685,199 +5877,7 @@ VMDFace.prototype.dump = function() {
 
 module.exports = VMDFace;
 
-},{}],34:[function(require,module,exports){
-'use strict';
-
-var FileParser = require('../FileParser');
-var __inherit = require('../Inherit').__inherit;
-var VMD = require('./Vmd');
-var VMDHeader = require('./VmdHeader');
-var VMDMotion = require('./VmdMotion');
-var VMDFace = require('./VmdFace');
-var VMDCamera = require('./VmdCamera');
-var VMDLight = require('./VmdLight');
-
-function VMDFileParser(buffer) {
-  this.parent = FileParser;
-  this.parent.call(this, buffer);
-}
-__inherit(VMDFileParser, FileParser);
-
-VMDFileParser.prototype._HEADER_STRUCTURE = {
-  magic: {type: 'char', isArray: true, size: 30},
-  modelName: {type: 'char', isArray: true, size: 20}
-};
-
-VMDFileParser.prototype._MOTIONS_STRUCTURE = {
-  count: {type: 'uint32'},
-  motions: {type: 'object', isArray: true, size: 'count'}
-};
-
-VMDFileParser.prototype._MOTION_STRUCTURE = {
-  boneName: {type: 'strings', isArray: true, size: 15},
-  frameNum: {type: 'uint32'},
-  location: {type: 'float', isArray: true, size: 3},
-  rotation: {type: 'float', isArray: true, size: 4},
-  interpolation: {type: 'uint8', isArray: true, size: 64}
-};
-
-VMDFileParser.prototype._FACES_STRUCTURE = {
-  count: {type: 'uint32'},
-  faces: {type: 'object', isArray: true, size: 'count'}
-};
-
-VMDFileParser.prototype._FACE_STRUCTURE = {
-  name: {type: 'strings', isArray: true, size: 15},
-  frameNum: {type: 'uint32'},
-  weight: {type: 'float'}
-};
-
-VMDFileParser.prototype._CAMERAS_STRUCTURE = {
-  count: {type: 'uint32'},
-  cameras: {type: 'object', isArray: true, size: 'count'}
-};
-
-VMDFileParser.prototype._CAMERA_STRUCTURE = {
-  frameNum: {type: 'uint32'},
-  length: {type: 'float'},
-  location: {type: 'float', isArray: true, size: 3},
-  rotation: {type: 'float', isArray: true, size: 3},
-  interpolation: {type: 'uint8', isArray: true, size: 24},
-  angle: {type: 'uint32'},
-  perspective: {type: 'uint8'}
-};
-
-VMDFileParser.prototype._LIGHTS_STRUCTURE = {
-  count: {type: 'uint32'},
-  lights: {type: 'object', isArray: true, size: 'count'}
-};
-
-VMDFileParser.prototype._LIGHT_STRUCTURE = {
-  frameNum: {type: 'uint32'},
-  color: {type: 'float', isArray: true, size: 3},
-  location: {type: 'float', isArray: true, size: 3},
-};
-
-
-VMDFileParser.prototype.parse = function() {
-  this.offset = 0;
-
-  var v = new VMD();
-  this._parseHeader(v);
-  this._parseMotions(v);
-  this._parseFaces(v);
-  this._parseCameras(v);
-  this._parseLights(v);
-
-  return v;
-};
-
-
-/**
- * TODO: be more strict.
- */
-VMDFileParser.prototype.valid = function() {
-  var tmp = this.offset;
-  this.offset = 0;
-
-  var v = new VMD();
-  this._parseHeader(v);
-
-  this.offset = tmp;
-
-  return v.valid();
-};
-
-
-VMDFileParser.prototype._parseHeader = function(v) {
-  var s = this._HEADER_STRUCTURE;
-  v.header = new VMDHeader();
-  this._parseObject(v.header, s);
-};
-
-
-VMDFileParser.prototype._parseMotions = function(v) {
-  var s = this._MOTIONS_STRUCTURE;
-  v.motionCount = this._getValue(s.count, this.offset);
-  this.offset += this._sizeof(s.count);
-
-  v.motions.length = 0;
-  for(var i = 0; i < v.motionCount; i++) {
-    this._parseMotion(v, i);
-  }
-};
-
-
-VMDFileParser.prototype._parseMotion = function(v, n) {
-  var s = this._MOTION_STRUCTURE;
-  var m = new VMDMotion(n);
-  this._parseObject(m, s);
-  v.motions[n] = m;
-};
-
-
-VMDFileParser.prototype._parseFaces = function(v) {
-  var s = this._FACES_STRUCTURE;
-  v.faceCount = this._getValue(s.count, this.offset);
-  this.offset += this._sizeof(s.count);
-
-  v.faces.length = 0;
-  for(var i = 0; i < v.faceCount; i++) {
-    this._parseFace(v, i);
-  }
-};
-
-
-VMDFileParser.prototype._parseFace = function(v, n) {
-  var s = this._FACE_STRUCTURE;
-  var f = new VMDFace(n);
-  this._parseObject(f, s);
-  v.faces[n] = f;
-};
-
-
-VMDFileParser.prototype._parseCameras = function(v) {
-  var s = this._CAMERAS_STRUCTURE;
-  v.cameraCount = this._getValue(s.count, this.offset);
-  this.offset += this._sizeof(s.count);
-
-  v.cameras.length = 0;
-  for(var i = 0; i < v.cameraCount; i++) {
-    this._parseCamera(v, i);
-  }
-};
-
-
-VMDFileParser.prototype._parseCamera = function(v, n) {
-  var s = this._CAMERA_STRUCTURE;
-  var c = new VMDCamera(n);
-  this._parseObject(c, s);
-  v.cameras[n] = c;
-};
-
-
-VMDFileParser.prototype._parseLights = function(v) {
-  var s = this._LIGHTS_STRUCTURE;
-  v.lightCount = this._getValue(s.count, this.offset);
-  this.offset += this._sizeof(s.count);
-
-  v.lights.length = 0;
-  for(var i = 0; i < v.lightCount; i++) {
-    this._parseLight(v, i);
-  }
-};
-
-
-VMDFileParser.prototype._parseLight = function(v, n) {
-  var s = this._LIGHT_STRUCTURE;
-  var l = new VMDLight(n);
-  this._parseObject(l, s);
-  v.lights[n] = l;
-};
-
-module.exports = VMDFileParser;
-
-},{"../FileParser":1,"../Inherit":2,"./Vmd":31,"./VmdCamera":32,"./VmdFace":33,"./VmdHeader":35,"./VmdLight":36,"./VmdMotion":37}],35:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 'use strict';
 function VMDHeader() {
   this.magic = null;
@@ -9389,4 +9389,4 @@ window.__effectSelectChanged = __effectSelectChanged;
 window.__lightingSelectChanged = __lightingSelectChanged;
 window.__lightColorRangeChanged = __lightColorRangeChanged;
 
-},{"./Pmd/PMDFileParser":18,"./Pmd/PMDModelView":24,"./Pmd/PMDView":29,"./Vmd/VMDFileParser":34,"./WebGL/Layer":43}]},{},[50]);
+},{"./Pmd/PMDFileParser":15,"./Pmd/PMDModelView":17,"./Pmd/PMDView":20,"./Vmd/VMDFileParser":31,"./WebGL/Layer":43}]},{},[50]);
